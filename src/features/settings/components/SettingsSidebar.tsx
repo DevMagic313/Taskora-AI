@@ -44,14 +44,14 @@ const settingsNav: NavGroup[] = [
         title: "Workspace",
         items: [
             { label: "General", href: "/settings/workspace/general", icon: Building2 },
-            { label: "Members", href: "/settings/members", icon: Users },
+            { label: "Members", href: "/settings/members", icon: Users, comingSoon: true },
             { label: "Roles & Permissions", href: "/settings/roles", icon: ShieldCheck, comingSoon: true },
         ],
     },
     {
         title: "Developer",
         items: [
-            { label: "API Keys", href: "/settings/api-keys", icon: Key },
+            { label: "API Keys", href: "/settings/api-keys", icon: Key, comingSoon: true },
             { label: "Webhooks", href: "/settings/webhooks", icon: Webhook, comingSoon: true },
             { label: "Integrations", href: "/settings/integrations", icon: Puzzle, comingSoon: true },
         ],
