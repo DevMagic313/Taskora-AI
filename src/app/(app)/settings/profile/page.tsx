@@ -67,17 +67,19 @@ export default function ProfilePage() {
                 .from("profiles")
                 .select("*")
                 .eq("id", user.id)
-                .single();
+                .maybeSingle();
             if (error) throw error;
-            const p = data as Profile;
-            setProfile(p);
-            setAvatarPreview(p.avatar_url);
-            reset({
-                full_name: p.full_name || "",
-                bio: p.bio || "",
-                timezone: p.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-                language: p.language || "en",
-            });
+            if (data) {
+                const p = data as Profile;
+                setProfile(p);
+                setAvatarPreview(p.avatar_url);
+                reset({
+                    full_name: p.full_name || "",
+                    bio: p.bio || "",
+                    timezone: p.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    language: p.language || "en",
+                });
+            }
         } catch {
             toast.error("Failed to load profile");
         } finally {
@@ -126,14 +128,15 @@ export default function ProfilePage() {
 
             const { error } = await supabase
                 .from("profiles")
-                .update({
+                .upsert({
+                    id: user.id,
                     full_name: values.full_name,
                     bio: values.bio,
                     timezone: values.timezone,
                     language: values.language,
                     avatar_url: avatarUrl,
-                })
-                .eq("id", user.id);
+                    updated_at: new Date().toISOString(),
+                });
 
             if (error) throw error;
 

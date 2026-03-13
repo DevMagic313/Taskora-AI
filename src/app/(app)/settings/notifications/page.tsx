@@ -60,7 +60,7 @@ export default function NotificationsPage() {
                 .from("profiles")
                 .select("notification_preferences")
                 .eq("id", user.id)
-                .single();
+                .maybeSingle();
             if (error) throw error;
             if (data?.notification_preferences) {
                 setPrefs({ ...DEFAULT_NOTIFICATION_PREFERENCES, ...data.notification_preferences });
@@ -84,8 +84,7 @@ export default function NotificationsPage() {
         try {
             const { error } = await supabase
                 .from("profiles")
-                .update({ notification_preferences: updated })
-                .eq("id", user.id);
+                .upsert({ id: user.id, notification_preferences: updated, updated_at: new Date().toISOString() });
             if (error) throw error;
         } catch {
             setPrefs(prefs); // Revert

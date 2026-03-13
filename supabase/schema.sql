@@ -268,3 +268,15 @@ select using (auth.uid() = user_id);
 drop policy if exists "Users can insert own ai history" on public.ai_generation_history;
 create policy "Users can insert own ai history" on public.ai_generation_history for
 insert with check (auth.uid() = user_id);
+
+-- =========================
+-- STORAGE BUCKETS
+-- =========================
+insert into storage.buckets (id, name, public) 
+values ('avatars', 'avatars', true), ('workspace-logos', 'workspace-logos', true)
+on conflict (id) do nothing;
+
+create policy "Public Access" on storage.objects for select using (bucket_id in ('avatars', 'workspace-logos'));
+create policy "Auth Insert" on storage.objects for insert with check (auth.role() = 'authenticated' and bucket_id in ('avatars', 'workspace-logos'));
+create policy "Auth Update" on storage.objects for update using (auth.role() = 'authenticated' and bucket_id in ('avatars', 'workspace-logos'));
+create policy "Auth Delete" on storage.objects for delete using (auth.role() = 'authenticated' and bucket_id in ('avatars', 'workspace-logos'));
