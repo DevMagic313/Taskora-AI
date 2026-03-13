@@ -172,47 +172,67 @@ export default function ApiKeysPage() {
                             </p>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-border text-left">
-                                        <th className="pb-3 font-medium text-muted-foreground text-xs">Name</th>
-                                        <th className="pb-3 font-medium text-muted-foreground text-xs">Key</th>
-                                        <th className="pb-3 font-medium text-muted-foreground text-xs hidden sm:table-cell">Created</th>
-                                        <th className="pb-3 font-medium text-muted-foreground text-xs hidden md:table-cell">Last Used</th>
-                                        <th className="pb-3 font-medium text-muted-foreground text-xs text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-border">
-                                    {keys.map((key) => (
-                                        <tr key={key.id}>
-                                            <td className="py-3 font-medium">{key.name}</td>
-                                            <td className="py-3">
-                                                <code className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded">
-                                                    {key.preview}
-                                                </code>
-                                            </td>
-                                            <td className="py-3 text-muted-foreground text-xs hidden sm:table-cell">
-                                                {new Date(key.created_at).toLocaleDateString()}
-                                            </td>
-                                            <td className="py-3 text-muted-foreground text-xs hidden md:table-cell">
-                                                {key.last_used_at
-                                                    ? new Date(key.last_used_at).toLocaleDateString()
-                                                    : "Never"}
-                                            </td>
-                                            <td className="py-3 text-right">
-                                                <button
-                                                    onClick={() => setRevokeTarget(key)}
-                                                    className="text-xs text-red-500 hover:underline font-medium"
-                                                >
-                                                    Revoke
-                                                </button>
-                                            </td>
+                        <>
+                            <div className="hidden sm:block overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-border text-left">
+                                            <th className="pb-3 font-medium text-muted-foreground text-xs">Name</th>
+                                            <th className="pb-3 font-medium text-muted-foreground text-xs">Key</th>
+                                            <th className="pb-3 font-medium text-muted-foreground text-xs hidden sm:table-cell">Created</th>
+                                            <th className="pb-3 font-medium text-muted-foreground text-xs hidden md:table-cell">Last Used</th>
+                                            <th className="pb-3 font-medium text-muted-foreground text-xs text-right">Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody className="divide-y divide-border">
+                                        {keys.map((key) => (
+                                            <tr key={key.id}>
+                                                <td className="py-3 font-medium">{key.name}</td>
+                                                <td className="py-3">
+                                                    <code className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded">
+                                                        {key.preview}
+                                                    </code>
+                                                </td>
+                                                <td className="py-3 text-muted-foreground text-xs hidden sm:table-cell">
+                                                    {new Date(key.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td className="py-3 text-muted-foreground text-xs hidden md:table-cell">
+                                                    {key.last_used_at
+                                                        ? new Date(key.last_used_at).toLocaleDateString()
+                                                        : "Never"}
+                                                </td>
+                                                <td className="py-3 text-right">
+                                                    <button
+                                                        onClick={() => setRevokeTarget(key)}
+                                                        className="text-xs text-red-500 hover:underline font-medium"
+                                                    >
+                                                        Revoke
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="sm:hidden space-y-3 mt-2">
+                                {keys.map((key) => (
+                                    <div key={key.id} className="p-3.5 rounded-xl border border-border bg-muted/20 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-medium text-sm">{key.name}</span>
+                                            <button onClick={() => setRevokeTarget(key)} className="text-xs text-red-500 hover:underline font-medium">Revoke</button>
+                                        </div>
+                                        <code className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded block w-fit">
+                                            {key.preview}
+                                        </code>
+                                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                            <span>Created: {new Date(key.created_at).toLocaleDateString()}</span>
+                                            <span>Used: {key.last_used_at ? new Date(key.last_used_at).toLocaleDateString() : "Never"}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     )}
                 </SettingsCard>
 

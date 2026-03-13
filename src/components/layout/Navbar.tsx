@@ -89,8 +89,12 @@ export function Navbar() {
                             onClick={() => setIsProfileOpen(!isProfileOpen)}
                             className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 hover:bg-muted transition-colors"
                         >
-                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">
-                                {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold overflow-hidden shrink-0">
+                                {user?.avatar_url ? (
+                                    <img src={user.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                                ) : (
+                                    user?.name?.charAt(0)?.toUpperCase() || "U"
+                                )}
                             </div>
                             <span className="text-sm font-semibold hidden sm:block max-w-[120px] truncate">
                                 {user?.name || "User"}

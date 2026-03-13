@@ -193,6 +193,35 @@ update on public.tasks for each row execute function public.update_updated_at_co
 alter table public.profiles enable row level security;
 alter table public.tasks enable row level security;
 alter table public.task_logs enable row level security;
+alter table public.workspaces enable row level security;
+alter table public.workspace_members enable row level security;
+alter table public.workspace_invites enable row level security;
+alter table public.api_keys enable row level security;
+-- =========================
+-- WORKSPACES AND API KEYS RLS POLICIES
+-- =========================
+create policy "Users can view own workspaces" on public.workspaces for
+select using (auth.uid() = owner_id OR auth.uid() IN (SELECT user_id FROM public.workspace_members WHERE workspace_id = id));
+create policy "Users can create own workspaces" on public.workspaces for
+insert with check (auth.uid() = owner_id);
+create policy "Users can update own workspaces" on public.workspaces for
+update using (auth.uid() = owner_id OR auth.uid() IN (SELECT user_id FROM public.workspace_members WHERE workspace_id = id AND role IN ('owner', 'admin')));
+create policy "Users can delete own workspaces" on public.workspaces for
+delete using (auth.uid() = owner_id);
+
+create policy "Users can view own workspace members" on public.workspace_members for
+select using (user_id = auth.uid() OR workspace_id IN (SELECT id FROM public.workspaces WHERE owner_id = auth.uid() OR id IN (SELECT workspace_id FROM public.workspace_members WHERE user_id = auth.uid())));
+create policy "Users can modify workspace members" on public.workspace_members for
+all using (workspace_id IN (SELECT id FROM public.workspaces WHERE owner_id = auth.uid() OR id IN (SELECT workspace_id FROM public.workspace_members WHERE user_id = auth.uid() AND role IN ('owner', 'admin'))));
+
+create policy "Users can view own workspace invites" on public.workspace_invites for
+select using (email = (SELECT email FROM auth.users WHERE id = auth.uid()) OR workspace_id IN (SELECT id FROM public.workspaces WHERE owner_id = auth.uid() OR id IN (SELECT workspace_id FROM public.workspace_members WHERE user_id = auth.uid())));
+create policy "Users can modify workspace invites" on public.workspace_invites for
+all using (workspace_id IN (SELECT id FROM public.workspaces WHERE owner_id = auth.uid() OR id IN (SELECT workspace_id FROM public.workspace_members WHERE user_id = auth.uid() AND role IN ('owner', 'admin'))));
+
+create policy "Users can manage own api keys" on public.api_keys for
+all using (auth.uid() = user_id);
+
 -- =========================
 -- PROFILES RLS POLICIES
 -- =========================

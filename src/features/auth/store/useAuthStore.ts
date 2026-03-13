@@ -8,6 +8,7 @@ export interface AuthUser {
     id: string;
     name: string;
     email: string;
+    avatar_url?: string;
 }
 
 interface AuthState {
@@ -26,6 +27,7 @@ function mapSupabaseUser(user: User): AuthUser {
         id: user.id,
         name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
         email: user.email || "",
+        avatar_url: user.user_metadata?.avatar_url,
     };
 }
 

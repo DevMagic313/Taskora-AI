@@ -38,7 +38,6 @@ export default function MembersPage() {
             const { data: ws } = await supabase
                 .from("workspaces")
                 .select("id")
-                .eq("owner_id", user.id)
                 .single();
 
             if (!ws) {
@@ -257,69 +256,79 @@ export default function MembersPage() {
                                     .slice(0, 2);
 
                                 return (
-                                    <div key={member.id} className="flex items-center gap-4 py-3">
-                                        {/* Avatar */}
-                                        <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">
-                                            {member.avatar_url ? (
-                                                <img src={member.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
-                                            ) : (
-                                                initials
-                                            )}
-                                        </div>
-
-                                        {/* Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm font-medium truncate">
-                                                    {member.full_name || "Unknown"}
-                                                </p>
-                                                {isSelf && (
-                                                    <span className="text-[9px] font-bold uppercase bg-primary/10 text-primary px-1.5 py-0.5 rounded">
-                                                        You
-                                                    </span>
-                                                )}
-                                                {isOwner && (
-                                                    <Crown className="h-3.5 w-3.5 text-amber-500" />
+                                    <div key={member.id} className="flex flex-col sm:flex-row sm:items-center gap-4 py-4 border-b border-border last:border-0">
+                                        <div className="flex items-center gap-3">
+                                            {/* Avatar */}
+                                            <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">
+                                                {member.avatar_url ? (
+                                                    <img src={member.avatar_url} alt="" className="h-full w-full rounded-full object-cover" />
+                                                ) : (
+                                                    initials
                                                 )}
                                             </div>
-                                            <p className="text-xs text-muted-foreground truncate">
-                                                {member.email}
-                                            </p>
+
+                                            {/* Info */}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-sm font-medium truncate">
+                                                        {member.full_name || "Unknown"}
+                                                    </p>
+                                                    {isSelf && (
+                                                        <span className="text-[9px] font-bold uppercase bg-primary/10 text-primary px-1.5 py-0.5 rounded">
+                                                            You
+                                                        </span>
+                                                    )}
+                                                    {isOwner && (
+                                                        <Crown className="h-3.5 w-3.5 text-amber-500" />
+                                                    )}
+                                                </div>
+                                                <p className="text-xs text-muted-foreground truncate">
+                                                    {member.email}
+                                                </p>
+                                            </div>
                                         </div>
 
-                                        {/* Role badge */}
-                                        <span className="text-[10px] font-medium uppercase bg-muted text-muted-foreground px-2 py-1 rounded hidden sm:block">
-                                            {member.role}
-                                        </span>
+                                        <div className="flex items-center gap-2 sm:ml-auto">
+                                            {/* Role badge */}
+                                            <span className="text-[10px] font-medium uppercase bg-muted text-muted-foreground px-2 py-1 rounded hidden sm:block">
+                                                {member.role}
+                                            </span>
 
-                                        {/* Joined */}
-                                        <span className="text-xs text-muted-foreground hidden md:block">
-                                            {new Date(member.joined_at).toLocaleDateString()}
-                                        </span>
+                                            {/* Joined */}
+                                            <span className="text-xs text-muted-foreground hidden md:block mr-2">
+                                                {new Date(member.joined_at).toLocaleDateString()}
+                                            </span>
 
-                                        {/* Actions */}
-                                        <div className="flex items-center gap-2">
-                                            {!isSelf && !isOwner && (
-                                                <>
-                                                    <select
-                                                        value={member.role}
-                                                        onChange={(e) => changeRole(member.id, e.target.value)}
-                                                        className="h-8 rounded-md border border-border bg-background px-2 text-xs focus:outline-none"
-                                                    >
-                                                        {ROLES.map((r) => (
-                                                            <option key={r} value={r}>
-                                                                {r.charAt(0).toUpperCase() + r.slice(1)}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    <button
-                                                        onClick={() => setRemoveTarget(member)}
-                                                        className="h-8 w-8 rounded-md flex items-center justify-center text-red-500 hover:bg-red-500/10 transition-colors"
-                                                    >
-                                                        <UserMinus className="h-3.5 w-3.5" />
-                                                    </button>
-                                                </>
-                                            )}
+                                            {/* Actions */}
+                                            <div className="flex items-center gap-2 w-full sm:w-auto">
+                                                {!isSelf && !isOwner && (
+                                                    <>
+                                                        <select
+                                                            value={member.role}
+                                                            onChange={(e) => changeRole(member.id, e.target.value)}
+                                                            className="h-8 flex-1 sm:flex-none rounded-md border border-border bg-background px-2 text-xs focus:outline-none"
+                                                        >
+                                                            {ROLES.map((r) => (
+                                                                <option key={r} value={r}>
+                                                                    {r.charAt(0).toUpperCase() + r.slice(1)}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                        <button
+                                                            onClick={() => setRemoveTarget(member)}
+                                                            className="h-8 px-2.5 sm:w-8 sm:px-0 rounded-md flex items-center justify-center text-red-500 hover:bg-red-500/10 transition-colors shrink-0"
+                                                        >
+                                                            <UserMinus className="h-3.5 w-3.5 sm:mr-0 mr-1.5" />
+                                                            <span className="text-xs sm:hidden">Remove</span>
+                                                        </button>
+                                                    </>
+                                                )}
+                                                {(isSelf || isOwner) && (
+                                                    <span className="text-[10px] font-medium uppercase bg-muted text-muted-foreground px-2 py-1.5 rounded sm:hidden w-full text-center">
+                                                        {member.role}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 );

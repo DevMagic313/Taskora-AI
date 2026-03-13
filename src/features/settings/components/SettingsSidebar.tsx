@@ -82,8 +82,12 @@ export function SettingsSidebar() {
                 {/* User info */}
                 <div className="p-5 border-b border-border/50">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0">
-                            {initials}
+                        <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden">
+                            {user?.avatar_url ? (
+                                <img src={user.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                            ) : (
+                                initials
+                            )}
                         </div>
                         <div className="min-w-0">
                             <p className="text-sm font-semibold truncate">{user?.name || "User"}</p>

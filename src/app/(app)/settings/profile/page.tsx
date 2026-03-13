@@ -27,7 +27,7 @@ const LANGUAGES = [
 ];
 
 export default function ProfilePage() {
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
     const supabase = createClient();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -142,6 +142,7 @@ export default function ProfilePage() {
 
             toast.success("Profile updated successfully");
             setAvatarFile(null);
+            setUser({ ...user, name: values.full_name, avatar_url: avatarUrl || user.avatar_url });
             await loadProfile();
         } catch {
             toast.error("Failed to update profile");

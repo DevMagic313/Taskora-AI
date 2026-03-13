@@ -65,7 +65,6 @@ export default function WorkspaceGeneralPage() {
             const { data, error } = await supabase
                 .from("workspaces")
                 .select("*")
-                .eq("owner_id", user.id)
                 .single();
             if (error && error.code !== "PGRST116") throw error;
             if (data) {
