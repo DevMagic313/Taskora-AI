@@ -1,291 +1,217 @@
 <div align="center">
+  <img src="public/logo.png" alt="Taskora AI Logo" width="120" />
   
-# Taskora AI
+  # ✦ Taskora AI
+  
+  **AI-Powered SaaS Task Management for Modern Teams**
 
-**AI-Powered Task Management for Modern Teams**
+  [![Next.js](https://img.shields.io/badge/Next.js-14+-black?logo=next.js&logoColor=white)](https://nextjs.org/)
+  [![Supabase](https://img.shields.io/badge/Supabase-Database%20%26%20Auth-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![Groq](https://img.shields.io/badge/AI_Powered-Groq-f55036?logo=openai&logoColor=white)](https://groq.com/)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind--CSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Groq](https://img.shields.io/badge/Groq-AI_Engine-f55036?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com/)
-[![Stripe](https://img.shields.io/badge/Stripe-Billing-008CDD?style=for-the-badge&logo=stripe&logoColor=white)](https://stripe.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployment-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](https://opensource.org/licenses/MIT)
-
-[Live Demo](https://codewithgh.vercel.app) • [Report Bug](#) • [Request Feature](#)
-
+  <p align="center">
+    <a href="#live-demo">Live Demo</a> •
+    <a href="#about-the-project">About</a> •
+    <a href="#key-features">Features</a> •
+    <a href="#getting-started">Installation</a> •
+    <a href="#ai-features">AI Capabilities</a> •
+    <a href="#contributing">Contribute</a>
+  </p>
 </div>
 
 ---
 
-## 📑 Table of Contents
+## 🚀 Live Demo
+> **[View Live Demo 🔗](https://taskora.ai)** *(Update with real link)*
 
-- [Overview](#-overview)
-- [✨ Features](#-features)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [📂 Project Structure](#-project-structure)
-- [🚀 Getting Started](#-getting-started)
-- [🗄️ Database Schema](#️-database-schema)
-- [💳 Subscription Plans](#-subscription-plans)
-- [📡 API Routes](#-api-routes)
-- [☁️ Deployment](#️-deployment)
-- [🔐 Security](#-security)
-- [🤝 Contributing](#-contributing)
-- [📝 License](#-license)
-- [👨💻 Author](#-author)
+<p align="center">
+  <img src="docs/screenshot.png" alt="Taskora AI Dashboard Screenshot" width="800" style="border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.1);"/>
+</p>
 
 ---
 
-## 📖 Overview
+## 📖 About the Project
 
-**Taskora AI** is a production-ready, AI-powered task management platform designed for modern teams. It bridges the gap between high-level goal setting and day-to-day execution by leveraging advanced LLMs (via Groq API) to automatically break down complex objectives into actionable tasks.
+**Taskora AI** is a next-generation SaaS task management application designed to supercharge your productivity. Built with modern web technologies, it seamlessly blends traditional project management with contextual AI assistance.
 
-Built with a focus on performance, scalability, and user experience, Taskora AI offers a rich feature set including real-time collaboration, a dynamic Kanban board, comprehensive calendar and table views, and an intelligent streaming chat assistant. Whether you are an individual aiming for peak productivity or an enterprise team coordinating massive projects, Taskora AI adapts to your workflow.
+Whether you're a solo developer tracking personal goals or a team collaborating across workspaces, Taskora AI helps you organize, prioritize, and generate tasks instantly using lightning-fast AI models.
 
-Beyond core task management, the platform includes a complete SaaS foundation with multi-workspace support, role-based access control, Stripe billing integration, and advanced analytics, making it a robust solution right out of the box.
-
----
-
-## ✨ Features
-
-### 🎯 Core Task Management
-- 📋 **Flexible Views:** Switch seamlessly between Kanban Board (drag-and-drop via `@dnd-kit`), Calendar, Table/Spreadsheet, and List views.
-- 🗂️ **Advanced Task Attributes:** Support for subtasks, attachments, rich-text comments, custom labels, and estimated hours.
-- 🔄 **Recurring Tasks:** Automate repetitive workflows with flexible recurrence rules.
-- 👥 **Assignees:** Assign tasks to team members and track accountability.
-
-### 🤖 AI-Powered Features
-- ⚡ **AI Task Generator:** Submit a high-level goal, and the Groq LLM inference engine instantly breaks it down into a structured, actionable task list.
-- 💬 **Streaming Chat Assistant:** A context-aware AI assistant that knows your tasks and helps you manage your workflow dynamically.
-- 🪄 **Auto-Prioritization:** Bulk reprioritize your task backlog intelligently using AI.
-
-### 📊 Analytics & Insights
-- 📈 **Advanced Dashboard:** Visualize productivity trends using beautiful `Recharts` charts.
-- 🟩 **Activity Heatmap:** GitHub-style contribution heatmap to track daily task completions.
-
-### 🏢 Team & Workspace
-- 🏢 **Multi-Workspace Support:** Create and manage multiple distinct workspaces under a single account.
-- 🔐 **Role-Based Access (RBAC):** Granular permissions with Owner, Admin, Member, and Viewer roles.
-- 🔔 **Real-Time Notifications:** Supabase Realtime-powered in-app alerts and Resend-powered email notifications.
-- 🚀 **Smooth Onboarding:** Multi-step, guided onboarding flow for new users and teams.
-
-### 💳 Billing & Plans
-- 💰 **Stripe Integration:** Seamless subscription management supporting Free, Pro, Team, and Enterprise plans.
-- 📊 **Usage Limits:** Automated tier enforcement for workspaces, members, and AI generations.
-
-### 🎨 UI/UX & Accessibility
-- 🌙 **Dark/Light Mode:** First-class dark mode support with smooth transitions.
-- 📱 **Fully Responsive:** Optimized layouts for mobile, tablet, and desktop environments.
-- 🧩 **Modern Design System:** Built with Tailwind CSS v4 and Lucide React icons.
+### Why Taskora AI?
+Traditional task managers require manual entry and endless sorting. Taskora AI acts as your intelligent co-pilot:
+- **Zero Friction:** Let AI break down complex goals into actionable tasks automatically.
+- **Auto-Prioritization:** AI analyzes your workload and reprioritizes your schedule dynamically.
+- **Collaborative Workspaces:** Native support for multi-tenant workspaces, granular roles, and email invitations.
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Key Features
 
-| Category | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Frontend Framework** | **Next.js 16 (App Router)** | React framework for SSR, routing, and API endpoints. |
-| **UI Library** | **React 19** | Component-based view library. |
-| **Language** | **TypeScript (Strict Mode)** | End-to-end type safety and developer experience. |
-| **Styling** | **Tailwind CSS v4** | Utility-first CSS framework for rapid UI development. |
-| **State Management** | **Zustand v5** | Lightweight, scalable global state management. |
-| **Database** | **PostgreSQL (Supabase)** | Robust relational database with Row Level Security. |
-| **Authentication** | **Supabase Auth** | Secure authentication with SSR Cookie Middleware. |
-| **AI Engine** | **Groq API** | Ultra-fast LLM inference for task generation and chat. |
-| **Billing** | **Stripe** | Subscription payments, webhooks, and customer portal. |
-| **Email** | **Resend API** | Reliable delivery for transactional and notification emails. |
-| **Deployment** | **Vercel** | Edge network deployment, CI/CD, and hosting. |
+### 🤖 AI-Powered Productivity
+- **AI Task Generation:** Convert high-level goals into step-by-step actionable tasks.
+- **Intelligent Reprioritization:** Automatically organize your tasks based on deadlines and urgency.
+- **AI Chat Assistant:** A built-in chat bubble that helps you manage your workflow conversationally.
+
+### 📋 Advanced Task Management
+- **Rich Task Metadata:** Track descriptions, categories, priorities, dates, comments, and notes.
+- **Detailed Audit Logging:** Comprehensive `task_logs` table tracking exactly when and how tasks change.
+- **Analytics Dashboard:** Visualize your productivity metrics and completion rates over time.
+
+### 🏢 Workspaces & Collaboration
+- **Multi-Tenant Workspaces:** Create distinct workspaces for different projects or clients.
+- **Role-Based Access Control (RBAC):** Assign Owner, Admin, Member, or Viewer roles.
+- **Email Invitations:** Integrated with Resend to seamlessly invite teammates to workspaces.
+
+### 🔒 Enterprise-Grade Security
+- **Supabase Authentication:** Secure login flows with magic links and OAuth.
+- **Row Level Security (RLS):** Strict PostgreSQL policies ensuring data privacy between workspaces.
+
+---
+
+## 🛠 Tech Stack
+
+| Category | Technology |
+| :--- | :--- |
+| **Frontend** | [Next.js](https://nextjs.org/) (App Router), [React 19](https://react.dev/), [Tailwind CSS v4](https://tailwindcss.com/) |
+| **State & Forms** | [Zustand](https://zustand-demo.pmnd.rs/), [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/) |
+| **Backend / BaaS**| [Supabase](https://supabase.com/) (PostgreSQL, Auth, Storage) |
+| **AI Integration** | [Groq API](https://groq.com/) (via OpenAI SDK), Next.js generic streaming |
+| **Email Service** | [Resend](https://resend.com/) (Native Fetch Implementation) |
+| **Icons & UI** | [Lucide React](https://lucide.dev/), [React Hot Toast](https://react-hot-toast.com/) |
 
 ---
 
 ## 📂 Project Structure
 
-```text
-src/
-├── app/
-│   ├── (marketing)/        # Landing page, pricing, and public docs
-│   ├── (auth)/             # Login, signup, forgot password, reset password
-│   ├── (app)/              # Protected application routes
-│   │   ├── dashboard/      # Main analytics and overview dashboard
-│   │   ├── tasks/          # Task views: list, kanban, calendar, table
-│   │   ├── analytics/      # Deep-dive metrics and reports
-│   │   ├── settings/       # Profile, workspace, members, billing, security
-│   │   └── onboarding/     # Multi-step user/workspace initialization
-│   └── api/                # Next.js Route Handlers
-│       ├── ai/             # Endpoints for generate, stream, reprioritize
-│       ├── tasks/          # Task CRUD and operations
-│       ├── workspaces/     # Workspace and member management
-│       ├── notifications/  # Notification handlers
-│       ├── webhooks/stripe/# Stripe event webhooks
-│       └── v1/             # Public REST API endpoints
-├── components/ui/          # Reusable Design System (Button, Modal, Drawer, etc.)
-├── features/               # Domain-specific logic, hooks, and components
-│   ├── ai/                 
-│   ├── analytics/          
-│   ├── auth/               
-│   ├── billing/            
-│   ├── tasks/              
-│   ├── workspaces/         
-│   └── notifications/      
-└── lib/                    # Core utilities and integrations (supabase, stripe, resend)
-```
+\`\`\`bash
+taskora-ai/
+├── src/
+│   ├── app/                # Next.js App Router (Pages & API Routes)
+│   │   ├── (app)/          # Authenticated routes (Dashboard, Settings, AI Planning)
+│   │   └── api/            # Serverless functions (AI Streaming, Workspace Invites)
+│   ├── components/         # Reusable globally shared UI components
+│   ├── features/           # Feature-based modular architecture
+│   │   ├── ai/             # AI components, API clients, and hooks
+│   │   ├── analytics/      # Dashboard and charts
+│   │   ├── auth/           # Authentication logic and context
+│   │   ├── settings/       # Profile, Security, and Settings screens
+│   │   ├── tasks/          # Task lists, creation, and management
+│   │   └── workspace/      # Multi-tenant workspace logic
+│   └── lib/                # Utilities (Supabase clients, Resend email logic)
+├── supabase/               # Database schema, migrations, RLS policies
+└── ...config files         # Tailwind, ESLint, TypeScript config
+\`\`\`
 
 ---
 
-## 🚀 Getting Started
-
-Follow these steps to set up Taskora AI on your local machine.
+## 🚦 Getting Started
 
 ### Prerequisites
-Make sure you have the following installed and set up:
-- **Node.js** (v20 or higher)
-- **Package Manager**: npm, yarn, pnpm, or bun
-- **Supabase Account**: Free tier is sufficient
-- **Groq API Key**: Free tier available
-- **Stripe Account**: For billing integration
-- **Resend Account**: Free tier works for development
+- Node.js 18.x or higher
+- A [Supabase](https://supabase.com/) project
+- A [Groq](https://console.groq.com/) account for AI API keys
+- A [Resend](https://resend.com/) account for email sending (optional for local dev)
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/taskora-ai.git
-cd taskora-ai
-```
+### Installation
 
-### 2. Install dependencies
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
+1. **Clone the repository**
+   \`\`\`bash
+   git clone https://github.com/DevMagic313/Taskora-AI.git
+   cd Taskora-AI
+   \`\`\`
 
-### 3. Supabase Setup
-1. Create a new project on [Supabase](https://supabase.com).
-2. Navigate to the **SQL Editor** in your Supabase dashboard.
-3. Open `supabase/schema.sql` from the repository and run the entire SQL script to map out your database tables and RLS policies.
+2. **Install dependencies**
+   \`\`\`bash
+   npm install
+   \`\`\`
 
-### 4. Environment Variables
-Create a `.env.local` file in the root directory and populate it with your credentials:
+3. **Set up the database**
+   Run the SQL script located at \`supabase/schema.sql\` inside your Supabase project's SQL Editor to create tables, triggers, and RLS policies.
 
-| Variable | Description | Required |
+4. **Set up environment variables**
+   Rename \`.env.example\` to \`.env.local\` and fill in the required keys (see table below).
+
+5. **Start the development server**
+   \`\`\`bash
+   npm run dev
+   \`\`\`
+   Your app should now be running on [http://localhost:3000](http://localhost:3000).
+
+---
+
+## 🔐 Environment Variables
+
+Create a \`.env.local\` file in the root of your project:
+
+| Variable | Description | Where to find |
 | :--- | :--- | :--- |
-| `NEXT_PUBLIC_APP_URL` | Base URL of your app (e.g., `http://localhost:3000`) | Yes |
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase Project URL | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase Anon/Public Key | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Admin key for backend operations | Yes |
-| `GROQ_API_KEY` | API key from Groq console | Yes |
-| `STRIPE_SECRET_KEY` | Stripe secret key (test/live) | Yes |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`| Stripe publishable key | Yes |
-| `STRIPE_WEBHOOK_SECRET` | Secret to verify Stripe webhook hits | Yes |
-| `RESEND_API_KEY` | Resend API key for sending emails | Yes |
+| \`NEXT_PUBLIC_SUPABASE_URL\` | Your Supabase Project URL | [Supabase API Settings](https://supabase.com/dashboard/project/_/settings/api) |
+| \`NEXT_PUBLIC_SUPABASE_ANON_KEY\`| Your Supabase Anon Public Key | [Supabase API Settings](https://supabase.com/dashboard/project/_/settings/api) |
+| \`GROQ_API_KEY\` | API key for lightning-fast AI models | [Groq Console](https://console.groq.com/keys) |
+| \`NEXT_PUBLIC_SITE_URL\` | URL of your deployed application | Usually \`http://localhost:3000\` locally |
+| \`SUPABASE_SERVICE_ROLE_KEY\` | Secret key bypassing RLS (Used for account deletion & admin tasks) | [Supabase API Settings](https://supabase.com/dashboard/project/_/settings/api) |
+| \`RESEND_API_KEY\` | API key for sending workspace invite emails | [Resend Dashboard](https://resend.com/api-keys) |
 
-### 5. Run the development server
-```bash
-npm run dev
-```
-Navigate to `http://localhost:3000` in your browser.
+>*Note: Never expose your `SUPABASE_SERVICE_ROLE_KEY` to the client side.*
 
 ---
 
-## 🗄️ Database Schema
+## 🧠 AI Features Deep-Dive
+Taskora AI heavily utilizes the **Groq API** (compatible with OpenAI's SDK) for nearly instantaneous AI responses:
 
-Taskora AI utilizes Supabase (PostgreSQL) as its primary database. Below is a high-level overview of the core tables:
-
-| Table | Key Columns | Purpose |
-| :--- | :--- | :--- |
-| **`profiles`** | `id`, `display_name`, `avatar_url`, `timezone`, `onboarding_completed` | Extended user data linked to Supabase Auth users. |
-| **`workspaces`** | `id`, `name`, `logo_url`, `owner_id`, `created_at` | Top-level containers for teams and projects. |
-| **`workspace_members`**| `workspace_id`, `user_id`, `role`, `joined_at` | Junction table managing RBAC (Owner/Admin/Member/Viewer). |
-| **`tasks`** | `id`, `workspace_id`, `title`, `description`, `status`, `priority`, `due_date`, `assignee_id`, `labels`, `estimated_hours`, `recurring` | Core workflow items within a workspace. |
-| **`task_logs`** | `id`, `task_id`, `workspace_id`, `action`, `user_id`, `created_at` | Audit trail for task updates and history. |
-| **`subtasks`** | `id`, `task_id`, `title`, `completed` | Granular checklist items attached to parent tasks. |
-| **`comments`** | `id`, `task_id`, `user_id`, `content`, `created_at` | User interactions and discussions on specific tasks. |
-| **`notifications`** | `id`, `user_id`, `type`, `read`, `payload`, `created_at` | In-app alerts for assignments, mentions, and updates. |
-| **`ai_generation_history`**| `id`, `user_id`, `goal`, `result`, `created_at` | Historical log of AI task breakdown requests. |
-| **`subscriptions`** | `id`, `user_id`, `stripe_customer_id`, `plan`, `status`, `period_end` | Tracks user/workspace active Stripe subscriptions. |
+- **Goal Breakdown (`/api/ai/generate-tasks`):** Users enter a high-level goal, and the AI streams back a structured JSON checklist of necessary tasks.
+- **Smart Reprioritization (`/api/ai/reprioritize`):** The AI evaluates the current task list against deadlines and user metrics to suggest localized priority updates.
+- **Contextual Chat Assistant (`AIChatBubble.tsx`):** A floating AI assistant holding context of the user's current workspace to answer workflow questions.
+- **AI History Tracking:** The `ai_generation_history` database table logs every prompt and generated outcome for future auditing and context resumption.
 
 ---
 
-## 💳 Subscription Plans
+## 📸 Screenshots
 
-| Feature | Free | Pro ($12/mo) | Team ($29/mo) | Enterprise |
-| :--- | :--- | :--- | :--- | :--- |
-| **Workspaces** | 1 | Unlimited | Unlimited | Unlimited |
-| **Members per Workspace**| Up to 3 | Up to 10 | Up to 50 | Custom |
-| **Tasks / Month** | 50 | Unlimited | Unlimited | Unlimited |
-| **AI Features & Chat**| ❌ | ✅ Included | ✅ Included | ✅ Custom Models |
-| **Advanced Analytics** | ❌ | ❌ | ✅ Included | ✅ Included |
-| **Support** | Community | Priority Email | Priority Email | Dedicated Account Manager|
+| Dashboard | AI Task Generator |
+| :---: | :---: |
+| <img src="docs/placeholder-dashboard.png" width="400" alt="Dashboard View"> | <img src="docs/placeholder-ai.png" width="400" alt="AI Task Generation"> |
+| **Workspace Settings** | **Analytics View** |
+| <img src="docs/placeholder-settings.png" width="400" alt="Workspace Members"> | <img src="docs/placeholder-analytics.png" width="400" alt="Task Analytics"> |
 
----
-
-## 📡 API Routes
-
-All internal and public APIs are handled via Next.js Route Handlers in the `src/app/api` directory.
-
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| **POST** | `/api/ai/generate` | Generates a structured task list from a text goal | Yes |
-| **POST** | `/api/ai/stream` | Streams responses for the AI chat assistant | Yes |
-| **POST** | `/api/ai/reprioritize` | Analyzes and bulk reprioritizes an array of tasks| Yes |
-| **GET / POST** | `/api/tasks` | Fetches or creates new tasks in a workspace | Yes |
-| **PATCH / DELETE**| `/api/tasks/[id]` | Updates or deletes a specific task | Yes |
-| **GET / POST** | `/api/workspaces` | Manages user workspaces | Yes |
-| **GET** | `/api/notifications` | Retrieves unread user notifications | Yes |
-| **POST** | `/api/webhooks/stripe`| Handles asynchronous Stripe billing events | No (Webhook Sign) |
+*(Add actual screenshots to a `/docs` folder and update these paths)*
 
 ---
 
-## ☁️ Deployment
+## 🗺 Roadmap
 
-Taskora AI is natively optimized for **Vercel**.
-
-1. Push your code to a GitHub/GitLab repository.
-2. In Vercel, create a new project and import your repository.
-3. Vercel will auto-detect the **Next.js** framework.
-4. Add all required **Environment Variables** (from your `.env.local` file) into the Vercel project settings. Ensure you use production keys for Stripe, Resend, and Supabase.
-5. Click **Deploy**. Vercel will automatically run `npm run build` and launch your application globally.
-
----
-
-## 🔐 Security
-
-Security is built into the core of Taskora AI:
-
-- **Row Level Security (RLS):** Every Supabase table is protected by strictly defined RLS policies. Users can only fetch, mutate, and delete data explicitly connected to their user ID or authorized workspace roles.
-- **Server-Side Authentication:** Protected routes and API endpoints verify user identity via strict SSR Cookie Middleware, preventing unauthenticated access.
-- **Webhook Verification:** Stripe webhooks strictly validate cryptographic signatures before updating database subscription states, preventing spoofed billing updates.
-- **API Key Proxying:** Sensitive keys (`GROQ_API_KEY`, `STRIPE_SECRET_KEY`) only live on the secure Node.js server environment and are _never_ exposed to the client.
+- [ ] **Mobile Application:** React Native companion app for on-the-go task management.
+- [ ] **Calendar Integrations:** Two-way sync with Google Calendar and Outlook.
+- [ ] **Kanban Board View:** Drag-and-drop task management alongside the list view.
+- [ ] **Advanced AI Context:** Let the AI read previous completion logs to estimate task duration automatically.
+- [ ] **Custom Roles:** Granular permission system expanding beyond preset roles.
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions to making Taskora AI better! 
+Contributions make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-1. **Fork** the repository
-2. **Create a branch**: `git checkout -b feature/your-feature-name`
-3. **Commit your changes**: `git commit -m "Add some feature"`
-4. **Push to the branch**: `git push origin feature/your-feature-name`
-5. **Open a Pull Request** to the `main` branch.
-
-Please make sure your code passes `npm run lint` and `npm run type-check` before submitting!
+1. Fork the Project
+2. Create your Feature Branch (\`git checkout -b feature/AmazingFeature\`)
+3. Commit your Changes (\`git commit -m 'Add some AmazingFeature'\`)
+4. Push to the Branch (\`git push origin feature/AmazingFeature\`)
+5. Open a Pull Request
 
 ---
 
-## 📝 License
+## 📜 License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+Distributed under the MIT License. See \`LICENSE\` for more information.
 
 ---
 
-## 👨💻 Author
+## 👨‍💻 Author
 
-### DevMagic
-- **Portfolio / Live Project:** [codewithgh.vercel.app](https://codewithgh.vercel.app)
-- **Role:** Full-Stack Developer & CS Student
+**Ghulam Hussain | DevMagic**
+- GitHub: [@DevMagic313](https://github.com/DevMagic313)
+- Portfolio: [codewithgh.vercel.app](https://codewithgh.vercel.app)
 
-*Built with ❤️ by DevMagic*
+---
+<p align="center">Made with ❤️ by DevMagic</p>
