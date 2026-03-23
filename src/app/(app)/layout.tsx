@@ -25,7 +25,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <Navbar />
                 <div className="flex flex-1 pt-14 max-w-[1600px] w-full mx-auto">
                     <Sidebar />
-                    <main className="flex-1 w-full min-h-[calc(100vh-3.5rem)] pb-20 md:pb-0">
+                    <main className="flex-1 w-full min-h-[calc(100vh-3.5rem)] pb-20 md:pb-0 overflow-x-hidden">
                         {children}
                     </main>
                 </div>

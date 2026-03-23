@@ -67,14 +67,14 @@ export function TaskCard({ task, onToggleStatus, onDelete, onEdit }: TaskCardPro
                                 </span>
                             )}
                             <span
-                                className={`text-lg sm:text-xl font-bold leading-tight tracking-tight transition-all duration-300 break-words ${isCompleted ? "line-through text-muted-foreground decoration-2 decoration-muted-foreground/30" : "text-foreground group-hover:text-primary"}`}
+                                className={`text-base lg:text-lg font-bold leading-tight tracking-tight transition-all duration-300 break-words ${isCompleted ? "line-through text-muted-foreground decoration-2 decoration-muted-foreground/30" : "text-foreground group-hover:text-primary"}`}
                             >
                                 {task.title}
                             </span>
                         </h3>
 
                         {task.description && (
-                            <p className={`text-sm line-clamp-2 leading-relaxed font-medium mt-1 transition-colors ${isCompleted ? 'text-muted-foreground/50' : 'text-muted-foreground/90'}`}>
+                            <p className={`text-xs sm:text-sm line-clamp-2 leading-relaxed font-medium mt-1 transition-colors ${isCompleted ? 'text-muted-foreground/50' : 'text-muted-foreground/90'}`}>
                                 {task.description}
                             </p>
                         )}
@@ -102,7 +102,7 @@ export function TaskCard({ task, onToggleStatus, onDelete, onEdit }: TaskCardPro
                 </div>
 
                 <div className="mt-6 sm:mt-8 flex items-center justify-between pt-4 sm:pt-5 border-t border-border/40 pb-1 mt-auto">
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
                         <span className={`inline-flex items-center rounded-lg border px-2.5 sm:px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-colors ${priorityStyles[task.priority as keyof typeof priorityStyles]}`}>
                             {task.priority}
                         </span>

@@ -42,7 +42,7 @@ export function Sidebar() {
         <>
             {/* Desktop Sidebar */}
             <aside
-                className={`hidden md:flex flex-col border-r border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 py-6 relative group ${collapsed ? "w-20" : "w-64"
+                className={`hidden md:flex flex-col border-r border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 py-6 relative group ${collapsed ? "w-16" : "md:w-52 lg:w-64"
                     }`}
             >
                 {/* Toggle Button */}

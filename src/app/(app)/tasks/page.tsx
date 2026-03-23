@@ -123,7 +123,7 @@ export default function TasksPage() {
     }
 
     return (
-        <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto space-y-6 sm:space-y-10 animate-fade-in relative z-10 w-full overflow-hidden">
+        <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto space-y-6 sm:space-y-10 animate-fade-in relative z-10 w-full overflow-x-hidden">
             <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[100px] pointer-events-none mix-blend-overlay" />
 
             <div className="space-y-3 relative z-10">
@@ -132,7 +132,7 @@ export default function TasksPage() {
                     <span className="text-xs font-bold uppercase tracking-wider text-primary">Master Database</span>
                 </div>
 
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-end justify-between">
                     <div>
                         <h1 className="text-2xl sm:text-4xl font-black tracking-tighter">
                             Active <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Workspaces.</span>
@@ -141,20 +141,20 @@ export default function TasksPage() {
                             Manage your priorities, organize categories, and track progress all in one place.
                         </p>
                     </div>
-                    <div className="flex gap-3 shrink-0 w-full md:w-auto">
+                    <div className="flex gap-2 sm:gap-3 shrink-0 w-full md:w-auto min-w-0">
                         <Button
                             variant="outline"
                             size="lg"
                             onClick={handleReprioritize}
                             isLoading={isReprioritizing}
                             disabled={tasks.filter(t => t.status !== "completed").length === 0}
-                            icon={!isReprioritizing ? <Sparkles className="h-4 w-4 text-accent" /> : undefined}
-                            className="flex-1 md:flex-none"
+                            icon={!isReprioritizing ? <Sparkles className="h-4 w-4 text-accent shrink-0" /> : undefined}
+                            className="flex-1 md:flex-none truncate text-sm px-2 sm:px-4"
                         >
-                            AI Reprioritize
+                            <span className="truncate">AI Reprioritize</span>
                         </Button>
-                        <Button size="lg" onClick={() => setIsModalOpen(true)} icon={<Plus className="h-5 w-5" />} className="shadow-xl shadow-primary/20 hover:shadow-primary/30 flex-1 md:flex-none">
-                            Create Action Item
+                        <Button size="lg" onClick={() => setIsModalOpen(true)} icon={<Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />} className="shadow-xl shadow-primary/20 hover:shadow-primary/30 flex-1 md:flex-none truncate text-sm px-2 sm:px-4">
+                            <span className="truncate">Create Action Item</span>
                         </Button>
                     </div>
                 </div>
@@ -169,7 +169,7 @@ export default function TasksPage() {
             </div>
 
             {/* Controls Bar */}
-            <div className="relative z-10 flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl sm:rounded-[1.5rem] p-3 sm:p-4 shadow-sm">
+            <div className="relative z-10 flex flex-col lg:flex-row gap-3 justify-between items-start lg:items-center bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-3 sm:p-4 shadow-sm">
                 <div className="relative w-full lg:max-w-[320px] group">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <input type="search" placeholder="Search tasks by title or context..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-12 pl-12 pr-4 rounded-xl border-2 border-input bg-background/50 text-base font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-all shadow-sm" />
@@ -238,7 +238,7 @@ export default function TasksPage() {
                     )}
                 </div>
             ) : (
-                <div className="relative z-10 grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 auto-rows-max items-start min-h-[400px]">
+                <div className="relative z-10 grid gap-4 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 auto-rows-max items-start min-h-[400px]">
                     {filteredTasks.map((task, index) => (
                         <div key={task.id} className="animate-stagger-in" style={{ animationDelay: `${index * 50}ms` }}>
                             <TaskCard task={task} onToggleStatus={handleToggleStatus} onDelete={handleDelete} onEdit={handleEdit} />
