@@ -59,7 +59,7 @@ const settingsNav: NavGroup[] = [
     {
         title: "Danger",
         items: [
-            { label: "Delete Account", href: "/settings/delete-account", icon: Trash2, danger: true, comingSoon: true },
+            { label: "Delete Account", href: "/settings/delete-account", icon: Trash2, danger: true, comingSoon: false },
         ],
     },
 ];
