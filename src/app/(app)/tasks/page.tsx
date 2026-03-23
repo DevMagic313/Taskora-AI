@@ -16,6 +16,8 @@ import type { ClientTask } from "@/features/tasks/services/taskApi";
 type StatusFilter = "all" | "pending" | "completed";
 type PriorityFilter = "all" | "low" | "medium" | "high";
 
+export const dynamic = "force-dynamic";
+
 export default function TasksPage() {
     const { tasks, isLoading, error, fetchTasks, createTask, updateTask, deleteTask } = useTaskStore();
     const [isModalOpen, setIsModalOpen] = useState(false);

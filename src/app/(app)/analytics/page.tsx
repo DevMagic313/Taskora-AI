@@ -6,6 +6,8 @@ import { useAnalyticsStore } from "@/features/analytics/store/useAnalyticsStore"
 import { StatCard } from "@/components/ui/StatCard";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 
+export const dynamic = "force-dynamic";
+
 export default function AnalyticsPage() {
     const { data, isLoading, error, fetchAnalytics } = useAnalyticsStore();
 

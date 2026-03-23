@@ -45,6 +45,8 @@ function applyFontSize(size: FontSize) {
     }
 }
 
+export const dynamic = "force-dynamic";
+
 export default function AppearancePage() {
     const { theme, setTheme } = useTheme();
     const [prefs, setPrefs] = useState<AppearancePreferences>(DEFAULT_APPEARANCE);

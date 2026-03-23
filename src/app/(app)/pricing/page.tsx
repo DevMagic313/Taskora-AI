@@ -38,6 +38,8 @@ const plans = [
     },
 ];
 
+export const dynamic = "force-dynamic";
+
 export default function PricingPage() {
     const { user } = useAuth();
 

@@ -12,6 +12,8 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
 
+export const dynamic = "force-dynamic";
+
 export default function DashboardPage() {
     const { user } = useAuth();
     const { tasks, isLoading, fetchTasks } = useTaskStore();

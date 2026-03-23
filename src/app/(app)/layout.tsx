@@ -1,13 +1,15 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 
-const AIChatBubble = dynamic(
+const AIChatBubble = dynamicImport(
     () => import("@/features/ai/components/AIChatBubble").then((mod) => ({ default: mod.AIChatBubble })),
     { ssr: false }
 );
+
+export const dynamic = "force-dynamic";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (

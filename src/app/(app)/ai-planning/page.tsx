@@ -3,6 +3,8 @@
 import { Sparkles, Brain, Wand2 } from "lucide-react";
 import { AIGeneratePanel } from "@/features/ai/components/AIGeneratePanel";
 
+export const dynamic = "force-dynamic";
+
 export default function AITaskGeneratorPage() {
     return (
         <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto space-y-6 sm:space-y-10 animate-fade-in relative z-10 w-full overflow-hidden">

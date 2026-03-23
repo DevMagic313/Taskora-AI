@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import toast from "react-hot-toast";
 
+export const dynamic = "force-dynamic";
+
 export default function NotificationsPage() {
     const { isSubscribed, isLoading, error, fetchStatus, subscribe, unsubscribe } = useNotificationStore();
 
