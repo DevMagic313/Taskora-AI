@@ -73,7 +73,6 @@ const ROLE_CONFIG = {
 
 export default function MembersPage() {
   const { user } = useAuth();
-  const supabase = createClient();
   
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -90,6 +89,7 @@ export default function MembersPage() {
 
   const loadData = useCallback(async () => {
     if (!user) return;
+    const supabase = createClient();
     setLoading(true);
     try {
       // Load workspace
@@ -105,30 +105,40 @@ export default function MembersPage() {
       }
       setWorkspace(ws);
 
-      // Load members with profile data
-      const { data: membersData } = await supabase
+      // Query 1: Get workspace members
+      const { data: membersData, error: membersError } = await supabase
         .from("workspace_members")
-        .select(`
-          id,
-          user_id,
-          role,
-          joined_at,
-          profiles:user_id (
-            full_name,
-            email,
-            avatar_url
-          )
-        `)
+        .select("id, user_id, role, joined_at")
         .eq("workspace_id", ws.id);
 
+      if (membersError) throw membersError;
+
+      // Query 2: Get profiles for each member separately
+      const userIds = (membersData || []).map((m: any) => m.user_id);
+
+      let profilesMap: Record<string, any> = {};
+
+      if (userIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from("profiles")
+          .select("id, full_name, email, avatar_url")
+          .in("id", userIds);
+
+        profilesMap = (profilesData || []).reduce((acc: any, p: any) => {
+          acc[p.id] = p;
+          return acc;
+        }, {});
+      }
+
+      // Combine members with their profiles
       const mappedMembers = (membersData || []).map((m: any) => ({
         id: m.id,
         user_id: m.user_id,
         role: m.role,
         joined_at: m.joined_at,
-        full_name: m.profiles?.full_name || null,
-        email: m.profiles?.email || null,
-        avatar_url: m.profiles?.avatar_url || null,
+        full_name: profilesMap[m.user_id]?.full_name || null,
+        email: profilesMap[m.user_id]?.email || null,
+        avatar_url: profilesMap[m.user_id]?.avatar_url || null,
       }));
       setMembers(mappedMembers);
 
@@ -145,11 +155,12 @@ export default function MembersPage() {
     } finally {
       setLoading(false);
     }
-  }, [user, supabase]);
+  }, [user]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
   const handleInvite = async (values: InviteFormValues) => {
+    const supabase = createClient();
     if (!workspace) {
       toast.error("Please create a workspace first in Settings → General");
       return;
@@ -192,6 +203,7 @@ export default function MembersPage() {
   };
 
   const handleRemoveMember = async (member: Member) => {
+    const supabase = createClient();
     if (member.role === "owner") {
       toast.error("Cannot remove the workspace owner");
       return;
@@ -215,6 +227,7 @@ export default function MembersPage() {
   };
 
   const handleChangeRole = async (memberId: string, newRole: string) => {
+    const supabase = createClient();
     try {
       const { error } = await supabase
         .from("workspace_members")
@@ -230,6 +243,7 @@ export default function MembersPage() {
   };
 
   const handleCancelInvite = async (inviteId: string) => {
+    const supabase = createClient();
     try {
       const { error } = await supabase
         .from("workspace_invites")
