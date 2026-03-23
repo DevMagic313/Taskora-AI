@@ -26,6 +26,8 @@ const LANGUAGES = [
     { value: "ur", label: "Urdu (اردو)" },
 ];
 
+export const dynamic = "force-dynamic";
+
 export default function ProfilePage() {
     const { user, setUser } = useAuth();
     const supabase = createClient();

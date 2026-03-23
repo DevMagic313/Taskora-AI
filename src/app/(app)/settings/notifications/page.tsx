@@ -45,6 +45,8 @@ const EMAIL_ITEMS: NotificationRow[] = [
     { key: "teamDigest", icon: Users, title: "Team activity digest", description: "Weekly summary of team activity", comingSoon: true },
 ];
 
+export const dynamic = "force-dynamic";
+
 export default function NotificationsPage() {
     const { user } = useAuth();
     const supabase = createClient();

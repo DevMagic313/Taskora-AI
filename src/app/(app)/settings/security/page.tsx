@@ -66,6 +66,8 @@ function GitHubIcon() {
     );
 }
 
+export const dynamic = "force-dynamic";
+
 export default function SecurityPage() {
     const { user } = useAuth();
     const supabase = createClient();

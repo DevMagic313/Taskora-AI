@@ -33,6 +33,8 @@ function generateSlug(name: string): string {
         .slice(0, 50);
 }
 
+export const dynamic = "force-dynamic";
+
 export default function WorkspaceGeneralPage() {
     const { user } = useAuth();
     const supabase = createClient();
