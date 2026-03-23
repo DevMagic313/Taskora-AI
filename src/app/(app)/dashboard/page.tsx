@@ -144,25 +144,53 @@ export default function DashboardPage() {
                         <p className="text-sm text-muted-foreground mb-6 relative z-10">Your completion goals</p>
                         <div className="flex justify-center relative z-10 mb-4">
                             <div className="relative">
-                                <svg className="w-32 h-32 -rotate-90 transform" viewBox="0 0 120 120">
-                                    <circle cx="60" cy="60" r={circleRadius} stroke="currentColor" strokeWidth="8" fill="none" className="text-muted/50" />
-                                    <circle cx="60" cy="60" r={circleRadius} stroke="url(#progressGradient)" strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={progressOffset} className="transition-all duration-1000 ease-out" />
-                                    <defs>
-                                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" stopColor="var(--primary)" />
-                                            <stop offset="100%" stopColor="var(--accent)" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-3xl font-black tabular-nums tracking-tighter">{completionRate}%</span>
-                                </div>
+                                {totalTasks === 0 ? (
+                                    <>
+                                        <svg className="w-32 h-32" viewBox="0 0 120 120">
+                                            <circle
+                                                cx="60"
+                                                cy="60"
+                                                r={circleRadius}
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                                fill="none"
+                                                strokeDasharray="8 6"
+                                                className="text-muted-foreground/30"
+                                            />
+                                        </svg>
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
+                                            <span className="text-sm font-bold text-muted-foreground">No tasks yet</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-32 h-32 -rotate-90 transform" viewBox="0 0 120 120">
+                                            <circle cx="60" cy="60" r={circleRadius} stroke="currentColor" strokeWidth="8" fill="none" className="text-muted/50" />
+                                            <circle cx="60" cy="60" r={circleRadius} stroke="url(#progressGradient)" strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={progressOffset} className="transition-all duration-1000 ease-out" />
+                                            <defs>
+                                                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" stopColor="var(--primary)" />
+                                                    <stop offset="100%" stopColor="var(--accent)" />
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-3xl font-black tabular-nums tracking-tighter">{completionRate}%</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
-                        <div className="flex items-center justify-between z-10 relative text-sm">
-                            <span className="font-medium text-muted-foreground">{completedTasks} of {totalTasks} done</span>
-                            <span className="font-bold text-emerald-600 dark:text-emerald-400">{completionRate}% rate</span>
-                        </div>
+                        {totalTasks === 0 ? (
+                            <p className="text-xs text-muted-foreground text-center relative z-10">
+                                Create your first task to track progress.
+                            </p>
+                        ) : (
+                            <div className="flex items-center justify-between z-10 relative text-sm">
+                                <span className="font-medium text-muted-foreground">{completedTasks} of {totalTasks} done</span>
+                                <span className="font-bold text-emerald-600 dark:text-emerald-400">{completionRate}% rate</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="rounded-2xl sm:rounded-3xl border border-border/50 bg-gradient-to-b from-card to-background p-4 sm:p-8 shadow-sm">

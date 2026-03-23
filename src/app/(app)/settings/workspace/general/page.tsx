@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { Building2, Copy, Calendar, Hash, Camera, Trash2 } from "lucide-react";
+import { Building2, Copy, Calendar, Hash, Camera, Trash2, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { SettingsHeader } from "@/components/ui/SettingsHeader";
@@ -109,6 +109,7 @@ export default function WorkspaceGeneralPage() {
     const onSubmit = async (values: WorkspaceFormValues) => {
         if (!user) return;
         setSaving(true);
+        const isNewWorkspace = !workspace;
         try {
             let logoUrl = workspace?.logo_url || null;
 
@@ -141,7 +142,7 @@ export default function WorkspaceGeneralPage() {
                 if (error) throw error;
             }
 
-            toast.success("Workspace saved successfully");
+            toast.success(isNewWorkspace ? "Workspace created!" : "Workspace saved!");
             setLogoFile(null);
             await loadWorkspace();
         } catch {
@@ -233,12 +234,23 @@ export default function WorkspaceGeneralPage() {
                         <label htmlFor="ws_slug" className="text-sm font-medium mb-1.5 block">
                             Workspace Slug
                         </label>
-                        <input
-                            id="ws_slug"
-                            {...register("slug")}
-                            className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors font-mono"
-                            placeholder="my-workspace"
-                        />
+                        <div className="flex gap-2">
+                            <input
+                                id="ws_slug"
+                                {...register("slug")}
+                                className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors font-mono"
+                                placeholder="my-workspace"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setValue("slug", generateSlug(nameValue), { shouldDirty: true })}
+                                className="h-10 px-3 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 text-xs font-medium shrink-0"
+                                title="Regenerate slug from name"
+                            >
+                                <RefreshCw className="h-3.5 w-3.5" />
+                                <span className="hidden sm:inline">Regenerate</span>
+                            </button>
+                        </div>
                         {errors.slug && (
                             <p className="text-xs text-red-500 mt-1">{errors.slug.message}</p>
                         )}

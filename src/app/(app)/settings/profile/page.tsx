@@ -38,6 +38,9 @@ export default function ProfilePage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [tzSearch, setTzSearch] = useState("");
     const [tzOpen, setTzOpen] = useState(false);
+    const [emailChangeOpen, setEmailChangeOpen] = useState(false);
+    const [newEmail, setNewEmail] = useState("");
+    const [sendingEmailChange, setSendingEmailChange] = useState(false);
 
     const {
         register,
@@ -151,8 +154,35 @@ export default function ProfilePage() {
         }
     };
 
-    const handleChangeEmail = async () => {
-        toast("A magic link will be sent to change your email.", { icon: "📧" });
+    const handleChangeEmail = () => {
+        setEmailChangeOpen(!emailChangeOpen);
+        setNewEmail("");
+    };
+
+    const handleSendEmailChange = async () => {
+        if (!newEmail.trim()) {
+            toast.error("Please enter a new email address");
+            return;
+        }
+
+        setSendingEmailChange(true);
+        try {
+            const { error } = await supabase.auth.updateUser({
+                email: newEmail.trim(),
+            });
+
+            if (error) {
+                toast.error(error.message);
+            } else {
+                toast.success(`A confirmation link has been sent to ${newEmail}. Please check your inbox.`);
+                setEmailChangeOpen(false);
+                setNewEmail("");
+            }
+        } catch (err) {
+            toast.error("Failed to send email change request");
+        } finally {
+            setSendingEmailChange(false);
+        }
     };
 
     // Filtered timezones
@@ -248,9 +278,37 @@ export default function ProfilePage() {
                                 onClick={handleChangeEmail}
                                 className="h-10 rounded-lg border border-border px-3 text-sm font-medium text-foreground hover:bg-muted transition-colors whitespace-nowrap"
                             >
-                                Change Email
+                                {emailChangeOpen ? "Cancel" : "Change Email"}
                             </button>
                         </div>
+
+                        {/* Email change form */}
+                        {emailChangeOpen && (
+                            <div className="mt-3 p-4 rounded-lg border border-border bg-muted/30 space-y-3">
+                                <div>
+                                    <label htmlFor="new_email" className="text-xs font-medium text-muted-foreground block mb-1.5">
+                                        New Email Address
+                                    </label>
+                                    <input
+                                        id="new_email"
+                                        type="email"
+                                        value={newEmail}
+                                        onChange={(e) => setNewEmail(e.target.value)}
+                                        className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+                                        placeholder="Enter new email address"
+                                        disabled={sendingEmailChange}
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleSendEmailChange}
+                                    disabled={!newEmail.trim() || sendingEmailChange}
+                                    className="h-9 rounded-md bg-primary text-primary-foreground px-4 text-sm font-medium hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {sendingEmailChange ? "Sending..." : "Send Change Link"}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Bio */}

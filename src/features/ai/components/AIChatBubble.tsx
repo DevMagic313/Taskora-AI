@@ -172,7 +172,7 @@ export function AIChatBubble() {
         <>
             {/* Chat Panel */}
             {isOpen && (
-                <div ref={panelRef} className="fixed bottom-20 md:bottom-24 right-4 md:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] h-[min(500px,70vh)] rounded-2xl border border-border/60 bg-background/95 backdrop-blur-xl shadow-2xl shadow-black/10 flex flex-col animate-scale-in overflow-hidden">
+                <div ref={panelRef} className="fixed bottom-24 md:bottom-24 right-4 md:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[60vh] sm:max-h-[500px] md:max-h-[500px] rounded-2xl border border-border/60 bg-background/95 backdrop-blur-xl shadow-2xl shadow-black/10 flex flex-col animate-scale-in overflow-hidden">
                     {/* Header */}
                     <div className="flex items-center justify-between px-5 py-4 border-b border-border/40 shrink-0 bg-gradient-to-r from-primary/5 to-accent/5">
                         <div className="flex items-center gap-3">

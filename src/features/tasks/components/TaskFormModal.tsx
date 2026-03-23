@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, Sparkles, Flag, AlignLeft, Type, User } from "lucide-react";
+import { X, Sparkles, Flag, AlignLeft, Type, User, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 interface TaskFormModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: { title: string; description: string; priority: "low" | "medium" | "high"; assigned_to?: string; category?: string; status: "pending" | "in_progress" | "completed"; checked: boolean; start_date?: string; due_date?: string; comments?: string; notes?: string; remarks?: string; }) => Promise<void>;
+    onSubmit: (data: { title: string; description: string; priority: "low" | "medium" | "high"; assigned_to?: string; category?: string; status: "pending" | "in_progress" | "completed"; checked: boolean; start_date?: string; due_date?: string; comments?: string; notes?: string; remarks?: string; pending_reason?: string; }) => Promise<void>;
 }
 
 export function TaskFormModal({ isOpen, onClose, onSubmit }: TaskFormModalProps) {
@@ -16,6 +16,7 @@ export function TaskFormModal({ isOpen, onClose, onSubmit }: TaskFormModalProps)
     const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
     const [assignedTo, setAssignedTo] = useState("");
     const [status, setStatus] = useState<"pending" | "in_progress" | "completed">("pending");
+    const [pendingReason, setPendingReason] = useState("");
     const [checked, setChecked] = useState(false);
     const [startDate, setStartDate] = useState("");
     const [dueDate, setDueDate] = useState("");
@@ -62,12 +63,14 @@ export function TaskFormModal({ isOpen, onClose, onSubmit }: TaskFormModalProps)
                 comments: comments.trim() || undefined,
                 notes: notes.trim() || undefined,
                 remarks: remarks.trim() || undefined,
+                pending_reason: pendingReason.trim() || undefined,
             });
             setTitle("");
             setDescription("");
             setPriority("medium");
             setAssignedTo("");
             setStatus("pending");
+            setPendingReason("");
             setChecked(false);
             setStartDate("");
             setDueDate("");
@@ -153,6 +156,15 @@ export function TaskFormModal({ isOpen, onClose, onSubmit }: TaskFormModalProps)
                                 </label>
                             </div>
                         </div>
+
+                        {status === "pending" && (
+                            <div className="space-y-2">
+                                <label htmlFor="task-pending-reason" className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 flex items-center gap-2 mb-2 ml-1">
+                                    <AlertCircle className="h-3.5 w-3.5 text-amber-500" /> Why is this pending?
+                                </label>
+                                <textarea id="task-pending-reason" value={pendingReason} onChange={(e) => setPendingReason(e.target.value)} placeholder="E.g., Waiting for frontend code, Need API keys, Blocked by design review..." className="flex min-h-[70px] sm:min-h-[80px] w-full rounded-xl sm:rounded-2xl border-2 border-amber-300/50 bg-amber-50/30 dark:bg-amber-900/10 dark:border-amber-700/30 px-4 sm:px-5 py-3 sm:py-4 text-sm font-medium transition-all duration-300 placeholder:text-muted-foreground/50 hover:border-amber-400 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-amber-500 disabled:opacity-50 resize-y shadow-sm" disabled={isSubmitting} />
+                            </div>
+                        )}
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                             <div className="space-y-2 relative group">

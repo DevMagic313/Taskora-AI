@@ -97,6 +97,94 @@ export default function AnalyticsPage() {
                         </div>
                     </div>
 
+                    {/* 7-Day Activity Chart */}
+                    <div className="rounded-3xl border border-border/50 bg-background/50 backdrop-blur-xl p-8 shadow-sm">
+                        <h3 className="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
+                            <Activity className="h-5 w-5 text-primary" /> 7-Day Activity
+                        </h3>
+
+                        {/* Legend */}
+                        <div className="flex items-center gap-6 mb-6">
+                            <div className="flex items-center gap-2">
+                                <div className="h-3 w-3 rounded-sm bg-indigo-500" />
+                                <span className="text-xs font-medium text-muted-foreground">Created</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="h-3 w-3 rounded-sm bg-emerald-500" />
+                                <span className="text-xs font-medium text-muted-foreground">Completed</span>
+                            </div>
+                        </div>
+
+                        {/* SVG Bar Chart */}
+                        {(() => {
+                            const maxValue = Math.max(
+                                ...data.dailyActivity.flatMap(d => [d.created, d.completed]),
+                                1 // ensure at least 1 to avoid division by zero
+                            );
+                            const allZero = data.dailyActivity.every(d => d.created === 0 && d.completed === 0);
+                            const maxHeight = 80;
+                            const barWidth = 16;
+                            const groupGap = 4;
+                            const dayGap = 32;
+                            const chartWidth = data.dailyActivity.length * (barWidth * 2 + groupGap + dayGap);
+
+                            return (
+                                <div className="overflow-x-auto">
+                                    <div className="min-w-fit">
+                                        <svg
+                                            width={chartWidth}
+                                            height={maxHeight + 30}
+                                            className="block"
+                                        >
+                                            {data.dailyActivity.map((day, i) => {
+                                                const x = i * (barWidth * 2 + groupGap + dayGap) + dayGap / 2;
+                                                const createdHeight = allZero ? 4 : Math.max((day.created / maxValue) * maxHeight, day.created > 0 ? 4 : 0);
+                                                const completedHeight = allZero ? 4 : Math.max((day.completed / maxValue) * maxHeight, day.completed > 0 ? 4 : 0);
+                                                const dayLabel = new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' });
+
+                                                return (
+                                                    <g key={day.date}>
+                                                        {/* Created bar (indigo) */}
+                                                        <rect
+                                                            x={x}
+                                                            y={maxHeight - createdHeight}
+                                                            width={barWidth}
+                                                            height={createdHeight || 4}
+                                                            rx={3}
+                                                            className={allZero ? "fill-indigo-500/30" : "fill-indigo-500"}
+                                                        />
+                                                        {/* Completed bar (emerald) */}
+                                                        <rect
+                                                            x={x + barWidth + groupGap}
+                                                            y={maxHeight - completedHeight}
+                                                            width={barWidth}
+                                                            height={completedHeight || 4}
+                                                            rx={3}
+                                                            className={allZero ? "fill-emerald-500/30" : "fill-emerald-500"}
+                                                        />
+                                                        {/* Day label */}
+                                                        <text
+                                                            x={x + barWidth + groupGap / 2}
+                                                            y={maxHeight + 18}
+                                                            textAnchor="middle"
+                                                            className="fill-muted-foreground text-[10px] font-medium"
+                                                        >
+                                                            {dayLabel}
+                                                        </text>
+                                                    </g>
+                                                );
+                                            })}
+                                        </svg>
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        {data.dailyActivity.every(d => d.created === 0 && d.completed === 0) && (
+                            <p className="text-xs text-muted-foreground mt-4 text-center">No activity in the last 7 days</p>
+                        )}
+                    </div>
+
                     {/* Recent Activity */}
                     <div className="rounded-3xl border border-border/50 bg-background/50 backdrop-blur-xl p-8 shadow-sm">
                         <h3 className="text-lg font-bold tracking-tight mb-6 flex items-center gap-2">

@@ -64,9 +64,9 @@ export async function GET() {
 
         const { data: weeklyLogs } = await supabase
             .from("task_logs")
-            .select("action_type, timestamp")
+            .select("action_type, created_at")
             .eq("user_id", user.id)
-            .gte("timestamp", sevenDaysAgo.toISOString());
+            .gte("created_at", sevenDaysAgo.toISOString());
 
         // Build daily activity map
         const dailyActivity: Array<{ date: string; created: number; completed: number }> = [];
@@ -76,10 +76,10 @@ export async function GET() {
             const dateStr = d.toISOString().split("T")[0];
 
             const created = (weeklyLogs || []).filter(
-                (log) => log.timestamp?.startsWith(dateStr) && log.action_type === "created"
+                (log) => log.created_at?.startsWith(dateStr) && log.action_type === "created"
             ).length;
             const completedCount = (weeklyLogs || []).filter(
-                (log) => log.timestamp?.startsWith(dateStr) && log.action_type === "completed"
+                (log) => log.created_at?.startsWith(dateStr) && log.action_type === "completed"
             ).length;
 
             dailyActivity.push({ date: dateStr, created, completed: completedCount });
@@ -88,9 +88,9 @@ export async function GET() {
         // 6. Recent activity (last 15 logs with task titles)
         const { data: recentLogs } = await supabase
             .from("task_logs")
-            .select("id, action_type, timestamp, task_id")
+            .select("id, action_type, created_at, task_id")
             .eq("user_id", user.id)
-            .order("timestamp", { ascending: false })
+            .order("created_at", { ascending: false })
             .limit(15);
 
         // Fetch task titles for recent logs
@@ -104,7 +104,7 @@ export async function GET() {
         const recentActivity = (recentLogs || []).map((log) => ({
             _id: log.id,
             actionType: log.action_type,
-            timestamp: log.timestamp,
+            created_at: log.created_at,
             taskTitle: taskTitleMap.get(log.task_id) || "Deleted Task",
         }));
 

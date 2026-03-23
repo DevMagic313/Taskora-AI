@@ -24,7 +24,7 @@ export interface AnalyticsData {
     recentActivity: Array<{
         _id: string;
         actionType: "created" | "updated" | "completed" | "deleted";
-        timestamp: string;
+        created_at: string;
         taskTitle: string;
     }>;
 }

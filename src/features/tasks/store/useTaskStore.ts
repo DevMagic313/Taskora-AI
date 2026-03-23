@@ -11,7 +11,7 @@ interface TaskState {
 
     // Actions
     fetchTasks: () => Promise<void>;
-    createTask: (data: Pick<ClientTask, "title" | "description" | "priority" | "status" | "checked" | "start_date" | "due_date" | "comments" | "notes" | "remarks"> & { assigned_to?: string; category?: string }) => Promise<void>;
+    createTask: (data: Pick<ClientTask, "title" | "description" | "priority" | "status" | "checked" | "start_date" | "due_date" | "comments" | "notes" | "remarks"> & { assigned_to?: string; category?: string; pending_reason?: string }) => Promise<void>;
     updateTask: (id: string, updates: Partial<Pick<ClientTask, "title" | "description" | "priority" | "status" | "checked" | "category" | "assigned_to" | "pending_reason" | "start_date" | "due_date" | "comments" | "notes" | "remarks">>) => Promise<void>;
     deleteTask: (id: string) => Promise<void>;
 }

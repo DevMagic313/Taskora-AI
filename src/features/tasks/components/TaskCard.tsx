@@ -13,6 +13,10 @@ interface TaskCardProps {
 export function TaskCard({ task, onToggleStatus, onDelete, onEdit }: TaskCardProps) {
     const isCompleted = task.status === "completed";
     const isInProgress = task.status === "in_progress";
+    const dueDate = task.due_date ? new Date(task.due_date) : null;
+    const now = new Date();
+    const isPastDue = dueDate ? dueDate.getTime() < now.getTime() : false;
+    const isDueSoon = dueDate ? !isPastDue && (dueDate.getTime() - now.getTime()) <= 48 * 60 * 60 * 1000 : false;
 
     const priorityStyles = {
         low: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
@@ -106,6 +110,21 @@ export function TaskCard({ task, onToggleStatus, onDelete, onEdit }: TaskCardPro
                         {task.category && task.category !== "General" && (
                             <span className="inline-flex items-center rounded-lg bg-muted/60 border border-border/50 px-2.5 sm:px-3 py-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground shadow-sm">
                                 {task.category}
+                            </span>
+                        )}
+
+                        {dueDate && !isCompleted && (
+                            <span
+                                className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1 text-[10px] font-black uppercase tracking-widest border shadow-sm ${
+                                    isPastDue
+                                        ? "bg-red-50 text-red-600 border-red-100"
+                                        : isDueSoon
+                                            ? "bg-amber-50 text-amber-700 border-amber-100"
+                                            : "bg-muted/60 text-muted-foreground border-border/50"
+                                }`}
+                            >
+                                <Clock className="h-3.5 w-3.5" />
+                                {`Due ${dueDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`}
                             </span>
                         )}
 

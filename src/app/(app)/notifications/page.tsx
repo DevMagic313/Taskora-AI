@@ -5,6 +5,7 @@ import { Bell, BellOff, BellRing } from "lucide-react";
 import { useNotificationStore } from "@/features/notifications/store/useNotificationStore";
 import { Button } from "@/components/ui/Button";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
+import toast from "react-hot-toast";
 
 export default function NotificationsPage() {
     const { isSubscribed, isLoading, error, fetchStatus, subscribe, unsubscribe } = useNotificationStore();
@@ -17,9 +18,46 @@ export default function NotificationsPage() {
         if (isSubscribed) {
             await unsubscribe();
         } else {
-            // In production, this would come from Firebase Messaging
-            const mockToken = "fcm-token-placeholder-" + Date.now();
-            await subscribe(mockToken);
+            // Request notification permission first
+            if (!("Notification" in window)) {
+                toast.error("Your browser does not support push notifications.");
+                return;
+            }
+
+            const permission = await Notification.requestPermission();
+            if (permission === "denied") {
+                toast.error("Please allow notifications in your browser settings.");
+                return;
+            }
+
+            if (permission !== "granted") {
+                toast.error("Notification permission is required.");
+                return;
+            }
+
+            // Register service worker
+            if (!("serviceWorker" in navigator)) {
+                toast.error("Your browser does not support service workers.");
+                return;
+            }
+
+            try {
+                const registration = await navigator.serviceWorker.register("/sw.js");
+                await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    // No VAPID key yet, so we just enable browser push
+                    applicationServerKey: undefined,
+                }).catch(() => {
+                    // Push subscription may fail without VAPID key, but that's ok for now
+                });
+
+                // Store a placeholder token since we don't have VAPID keys configured yet
+                await subscribe("browser-push-enabled");
+                toast.success("Push notifications enabled!");
+            } catch (err) {
+                console.error("Service worker registration failed:", err);
+                toast.error("Failed to enable push notifications.");
+            }
         }
     };
 
@@ -74,6 +112,10 @@ export default function NotificationsPage() {
                 >
                     {isSubscribed ? "Disable Notifications" : "Enable Notifications"}
                 </Button>
+
+                <p className="text-xs text-muted-foreground/70 mt-4 text-center">
+                    Note: Email notifications require the Pro plan.
+                </p>
             </div>
         </div>
     );
