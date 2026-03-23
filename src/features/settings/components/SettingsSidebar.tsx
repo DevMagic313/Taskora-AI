@@ -44,7 +44,7 @@ const settingsNav: NavGroup[] = [
         title: "Workspace",
         items: [
             { label: "General", href: "/settings/workspace/general", icon: Building2 },
-            { label: "Members", href: "/settings/members", icon: Users, comingSoon: true },
+            { label: "Members", href: "/settings/members", icon: Users, comingSoon: false },
             { label: "Roles & Permissions", href: "/settings/roles", icon: ShieldCheck, comingSoon: true },
         ],
     },
