@@ -204,7 +204,7 @@ export default function AnalyticsPage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-bold truncate">{log.taskTitle}</p>
-                                            <p className="text-xs text-muted-foreground capitalize">{log.actionType} • {new Date(log.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                                            <p className="text-xs text-muted-foreground capitalize">{log.actionType} • {new Date(log.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                                         </div>
                                     </div>
                                 ))}

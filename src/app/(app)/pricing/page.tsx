@@ -2,6 +2,8 @@
 
 import { CreditCard, Check, Sparkles, Clock, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import toast from "react-hot-toast";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const plans = [
     {
@@ -37,6 +39,8 @@ const plans = [
 ];
 
 export default function PricingPage() {
+    const { user } = useAuth();
+
     return (
         <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-10 animate-fade-in relative z-10 w-full overflow-hidden">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none mix-blend-overlay" />
@@ -105,6 +109,15 @@ export default function PricingPage() {
                             >
                                 {plan.cta}
                             </Button>
+
+                            {plan.comingSoon && (
+                                <button
+                                    onClick={() => toast.success(user?.email ? `We'll notify you at ${user.email} when this plan launches.` : "We'll notify you when this plan launches.")}
+                                    className="mt-3 text-sm font-medium text-muted-foreground hover:text-primary transition-colors text-center w-full"
+                                >
+                                    Get notified when available →
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}
