@@ -130,6 +130,17 @@ export default function MembersPage() {
         }, {});
       }
 
+      // Also fetch current user profile as fallback
+      const { data: myProfile } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, avatar_url")
+        .eq("id", user!.id)
+        .maybeSingle();
+
+      if (myProfile) {
+        profilesMap[myProfile.id] = myProfile;
+      }
+
       // Combine members with their profiles
       const mappedMembers = (membersData || []).map((m: any) => ({
         id: m.id,
@@ -143,12 +154,18 @@ export default function MembersPage() {
       setMembers(mappedMembers);
 
       // Load pending invites
-      const { data: invitesData } = await supabase
+      const { data: invitesData, error: invitesError } = await supabase
         .from("workspace_invites")
         .select("*")
         .eq("workspace_id", ws.id)
         .is("accepted_at", null);
-      setInvites(invitesData || []);
+
+      if (invitesError) {
+        console.error("Invites fetch error:", invitesError.message);
+        setInvites([]);
+      } else {
+        setInvites(invitesData || []);
+      }
 
     } catch (err) {
       toast.error("Failed to load members");
@@ -160,28 +177,22 @@ export default function MembersPage() {
   useEffect(() => { loadData(); }, [loadData]);
 
   const handleInvite = async (values: InviteFormValues) => {
-    const supabase = createClient();
     if (!workspace) {
-      toast.error("Please create a workspace first in Settings → General");
+      toast.error("Please create a workspace first");
       return;
     }
     setInviting(true);
     try {
-      // Check if already invited
-      const existing = invites.find(i => i.email === values.email);
-      if (existing) {
-        toast.error("This email has already been invited");
-        return;
-      }
+      const supabase = createClient();
       
-      // Check if already a member
+      // Check duplicates
+      const existing = invites.find(i => i.email === values.email);
+      if (existing) { toast.error("Already invited"); return; }
       const existingMember = members.find(m => m.email === values.email);
-      if (existingMember) {
-        toast.error("This user is already a member");
-        return;
-      }
+      if (existingMember) { toast.error("Already a member"); return; }
 
-      const { error } = await supabase
+      // Step 1: Save invite to database
+      const { error: dbError } = await supabase
         .from("workspace_invites")
         .insert({
           workspace_id: workspace.id,
@@ -190,13 +201,34 @@ export default function MembersPage() {
           invited_by: user!.id,
         });
 
-      if (error) throw error;
+      if (dbError) throw dbError;
 
-      toast.success(`Invitation sent to ${values.email}`);
+      // Step 2: Send email notification via API route
+      const emailRes = await fetch("/api/workspace/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: values.email,
+          role: values.role,
+          workspaceId: workspace.id,
+          workspaceName: workspace.name,
+        }),
+      });
+
+      const emailData = await emailRes.json();
+
+      if (emailData.warning) {
+        // User exists but invite saved — still success
+        toast.success(`Invite saved for ${values.email}`);
+      } else {
+        toast.success(`Invitation email sent to ${values.email}!`);
+      }
+
       reset();
       await loadData();
     } catch (err) {
       toast.error("Failed to send invitation");
+      console.error(err);
     } finally {
       setInviting(false);
     }
@@ -359,8 +391,11 @@ export default function MembersPage() {
                 const RoleIcon = roleConfig.icon;
                 const isOwner = member.role === "owner";
                 const isCurrentUser = member.user_id === user?.id;
-                const initials = (member.full_name || member.email || "U")
-                  .split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+                const displayName = member.full_name || 
+                  (member.user_id === user?.id ? user?.name : null) || 
+                  member.email || "U";
+                const initials = displayName
+                  .split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
 
                 return (
                   <div key={member.id} 
@@ -378,7 +413,9 @@ export default function MembersPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium truncate">
-                          {member.full_name || member.email || "Unknown"}
+                          {member.full_name || 
+                            (member.user_id === user?.id ? user?.name : null) || 
+                            member.email || "Unknown"}
                         </p>
                         {isCurrentUser && (
                           <span className="text-[10px] font-bold bg-primary/10 
