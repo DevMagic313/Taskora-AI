@@ -364,6 +364,7 @@ create policy "Users can modify workspace members" on public.workspace_members
 
 -- =========================
 -- WORKSPACE INVITES RLS POLICIES
+-- ✅ FIXED: Replaced auth.users subquery with auth.email()
 -- =========================
 drop policy if exists "Users can view own workspace invites" on public.workspace_invites;
 drop policy if exists "Users can modify workspace invites" on public.workspace_invites;
@@ -371,7 +372,7 @@ drop policy if exists "Invited users can view their invites" on public.workspace
 
 create policy "Users can view own workspace invites" on public.workspace_invites
     for select using (
-        email = (select email from auth.users where id = auth.uid())
+        email = auth.email()
         OR public.is_workspace_owner(workspace_id)
         OR public.is_workspace_member(workspace_id)
     );
