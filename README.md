@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/logo.png" alt="Taskora AI Logo" width="120" />
+  <img src="public/taskora-favicon.svg" alt="Taskora AI Logo" width="120" />
   
   # ✦ Taskora AI
   
@@ -178,7 +178,7 @@ Taskora AI heavily utilizes the **Groq API** (compatible with OpenAI's SDK) for 
 
 | Dashboard | AI Task Generator |
 | :---: | :---: |
-| <img src="docs/placeholder-dashboard.png" width="400" alt="Dashboard View"> | <img src="docs/placeholder-ai.png" width="400" alt="AI Task Generation"> |
+| <img src="docs/screenshot.png" width="400" alt="Dashboard View"> | <img src="docs/ai-planner.png" width="400" alt="AI Task Generation"> |
 | **Workspace Settings** | **Analytics View** |
 | <img src="docs/placeholder-settings.png" width="400" alt="Workspace Members"> | <img src="docs/placeholder-analytics.png" width="400" alt="Task Analytics"> |
 
