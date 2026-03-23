@@ -145,6 +145,10 @@ export default function ProfilePage() {
 
             if (error) throw error;
 
+            await supabase.auth.updateUser({
+                data: { name: values.full_name }
+            });
+
             toast.success("Profile updated successfully");
             setAvatarFile(null);
             setUser({ ...user, name: values.full_name, avatar_url: avatarUrl || user.avatar_url });

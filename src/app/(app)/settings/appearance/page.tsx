@@ -57,6 +57,9 @@ export default function AppearancePage() {
         setPrefs(loaded);
         applyAccentColor(loaded.accentColor);
         applyFontSize(loaded.fontSize);
+        const root = window.document.documentElement;
+        root.classList.remove("sidebar-default", "sidebar-compact", "sidebar-minimal");
+        root.classList.add(`sidebar-${loaded.sidebarStyle}`);
         setMounted(true);
     }, []);
 
@@ -69,6 +72,11 @@ export default function AppearancePage() {
             savePreferences(next);
             return next;
         });
+        if (key === "sidebarStyle") {
+            const root = window.document.documentElement;
+            root.classList.remove("sidebar-default", "sidebar-compact", "sidebar-minimal");
+            root.classList.add(`sidebar-${value}`);
+        }
     };
 
     if (!mounted) return null;

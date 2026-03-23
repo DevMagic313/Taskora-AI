@@ -14,7 +14,7 @@ import {
     ChevronLeft,
     ChevronRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -37,13 +37,37 @@ const mobileNavItems = [
 export function Sidebar() {
     const pathname = usePathname();
     const [collapsed, setCollapsed] = useState(false);
+    const [sidebarStyle, setSidebarStyle] = useState<string>("default");
+
+    useEffect(() => {
+        const getStyle = () => {
+            const root = document.documentElement;
+            if (root.classList.contains("sidebar-minimal")) setSidebarStyle("minimal");
+            else if (root.classList.contains("sidebar-compact")) setSidebarStyle("compact");
+            else setSidebarStyle("default");
+        };
+        getStyle();
+        const observer = new MutationObserver(getStyle);
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+        return () => observer.disconnect();
+    }, []);
+
+    const sidebarWidth = collapsed
+        ? "w-16"
+        : sidebarStyle === "minimal"
+            ? "w-16"
+            : sidebarStyle === "compact"
+                ? "w-48"
+                : "w-52 lg:w-64";
 
     return (
         <>
             {/* Desktop Sidebar */}
             <aside
-                className={`hidden md:flex flex-col border-r border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 py-6 relative group ${collapsed ? "w-16" : "md:w-52 lg:w-64"
-                    }`}
+                className={`hidden md:flex flex-col border-r border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 py-6 relative group ${sidebarWidth}`}
             >
                 {/* Toggle Button */}
                 <button
@@ -71,17 +95,19 @@ export function Sidebar() {
                                 className={`group/link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${isActive
                                     ? "bg-primary/10 text-primary shadow-sm"
                                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                                    } ${collapsed ? "justify-center" : ""}`}
-                                title={collapsed ? item.label : undefined}
+                                    } ${sidebarStyle === "minimal" || collapsed ? "justify-center px-2" : ""}`}
+                                title={collapsed || sidebarStyle === "minimal" ? item.label : undefined}
                             >
                                 <Icon
                                     className={`h-5 w-5 shrink-0 transition-colors ${isActive ? "text-primary" : "text-muted-foreground group-hover/link:text-foreground"
                                         }`}
                                 />
-                                {!collapsed && (
-                                    <span className="truncate">{item.label}</span>
+                                {(sidebarStyle !== "minimal" && !collapsed) && (
+                                    <span className={`truncate ${sidebarStyle === "compact" ? "text-xs" : "text-sm"}`}>
+                                        {item.label}
+                                    </span>
                                 )}
-                                {!collapsed && isActive && (
+                                {(sidebarStyle !== "minimal" && !collapsed) && isActive && (
                                     <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                                 )}
                             </Link>
@@ -90,7 +116,7 @@ export function Sidebar() {
                 </nav>
 
                 {/* Pro Card */}
-                {!collapsed && (
+                {sidebarStyle === "default" && !collapsed && (
                     <div className="mx-3 mt-6 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 p-5 shadow-sm">
                         <div className="flex items-center gap-2 mb-2">
                             <Sparkles className="h-4 w-4 text-primary" />

@@ -56,6 +56,25 @@ export const useAuthStore = create<AuthState>((set) => ({
                 isAuthenticated: true,
                 isLoading: false,
             });
+
+            // Fetch profile table for accurate display name and avatar
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("full_name, avatar_url")
+                .eq("id", user.id)
+                .maybeSingle();
+
+            if (profile?.full_name) {
+                set(state => ({
+                    user: state.user
+                        ? {
+                            ...state.user,
+                            name: profile.full_name,
+                            avatar_url: profile.avatar_url ?? state.user.avatar_url
+                        }
+                        : null
+                }));
+            }
         } else {
             set({
                 user: null,
@@ -72,6 +91,28 @@ export const useAuthStore = create<AuthState>((set) => ({
                     isAuthenticated: true,
                     isLoading: false,
                 });
+
+                // Fetch accurate name from profiles table
+                const fetchProfile = async () => {
+                    const { data: profile } = await supabase
+                        .from("profiles")
+                        .select("full_name, avatar_url")
+                        .eq("id", session.user.id)
+                        .maybeSingle();
+
+                    if (profile?.full_name) {
+                        set(state => ({
+                            user: state.user
+                                ? {
+                                    ...state.user,
+                                    name: profile.full_name,
+                                    avatar_url: profile.avatar_url ?? state.user.avatar_url
+                                }
+                                : null
+                        }));
+                    }
+                };
+                fetchProfile();
             } else {
                 set({
                     user: null,
