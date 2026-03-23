@@ -67,6 +67,7 @@ export function Sidebar() {
         <>
             {/* Desktop Sidebar */}
             <aside
+                suppressHydrationWarning
                 className={`hidden md:flex flex-col border-r border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 py-6 relative group ${sidebarWidth}`}
             >
                 {/* Toggle Button */}
@@ -103,7 +104,7 @@ export function Sidebar() {
                                         }`}
                                 />
                                 {(sidebarStyle !== "minimal" && !collapsed) && (
-                                    <span className={`truncate ${sidebarStyle === "compact" ? "text-xs" : "text-sm"}`}>
+                                    <span suppressHydrationWarning className={`truncate ${sidebarStyle === "compact" ? "text-xs" : "text-sm"}`}>
                                         {item.label}
                                     </span>
                                 )}
