@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
+import { sendEmail } from "@/lib/email";
+import { templates } from "@/lib/email/templates";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -15,32 +16,26 @@ export async function POST(request: Request) {
 
     if (!email || !workspaceId) {
       return NextResponse.json(
-        { error: "Email and workspaceId required" }, 
+        { error: "Email and workspaceId required" },
         { status: 400 }
       );
     }
 
-    const adminClient = createAdminClient();
+    const inviterName = user.user_metadata?.name || user.email || "A teammate";
 
-    // Send invite email using Supabase admin
-    // This sends a magic link / OTP to the invited email
-    const { error } = await adminClient.auth.admin.inviteUserByEmail(email, {
-      data: {
-        invited_to_workspace: workspaceId,
-        invited_role: role,
-        workspace_name: workspaceName || "a workspace",
-        invited_by_name: user.user_metadata?.name || user.email,
-      },
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+    const result = await sendEmail({
+      to: email,
+      subject: `${inviterName} invited you to join ${workspaceName} on Taskora AI`,
+      html: templates.workspaceInvite(workspaceName, role, inviterName),
     });
 
-    if (error) {
-      // User might already exist — that's okay, invite is still in DB
-      console.error("Email invite error:", error.message);
-      // Don't throw — the DB invite record was already created
-      return NextResponse.json({ 
-        success: true, 
-        warning: "User already exists, invite saved to database" 
+    if (!result.success) {
+      if (result.error === "Missing API Key") {
+        return NextResponse.json({ success: true, warning: "Email not sent: no API key" });
+      }
+      return NextResponse.json({
+        success: true,
+        warning: "Invite saved but email delivery failed"
       });
     }
 
@@ -48,7 +43,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("Invite API error:", err);
     return NextResponse.json(
-      { error: "Failed to send invite email" }, 
+      { error: "Failed to send invite email" },
       { status: 500 }
     );
   }
