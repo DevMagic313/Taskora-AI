@@ -24,40 +24,55 @@ export async function ensureBillingProfile(
     supabase: SupabaseClient,
     userId: string
 ): Promise<{ plan: BillingPlan; periodStart: Date; periodEnd: Date }> {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("billing_plan, billing_cycle_anchor")
         .eq("id", userId)
-        .single<BillingProfileRow>();
+        .maybeSingle<BillingProfileRow>();
+
+    if (profileError) throw profileError;
 
     const now = new Date();
     const storedPlan = profile?.billing_plan ?? null;
     const plan = storedPlan !== null && isValidPlan(storedPlan) ? storedPlan : "starter";
-    const anchor = profile?.billing_cycle_anchor ? new Date(profile.billing_cycle_anchor) : now;
 
-    const isInvalidDate = Number.isNaN(anchor.getTime());
-    const safeAnchor = isInvalidDate ? now : anchor;
-    const periodEnd = new Date(safeAnchor);
+    const rawAnchor = profile?.billing_cycle_anchor ? new Date(profile.billing_cycle_anchor) : null;
+    const anchorInvalid = rawAnchor === null || Number.isNaN(rawAnchor.getTime());
+    let periodStart = anchorInvalid ? now : rawAnchor;
+    let periodEnd = new Date(periodStart);
     periodEnd.setMonth(periodEnd.getMonth() + 1);
 
-    const needsReset = now >= periodEnd;
+    const needsReset = anchorInvalid || now >= periodEnd;
+    const needsPlanFix = !profile || !isValidPlan(storedPlan);
 
-    if (!profile || needsReset || isInvalidDate || !isValidPlan(profile.billing_plan ?? null)) {
-        await supabase
+    if (!profile) {
+        const { error } = await supabase.from("profiles").insert({
+            id: userId,
+            billing_plan: plan,
+            billing_status: "active",
+            billing_cycle_anchor: now.toISOString(),
+        });
+        if (error) throw error;
+        periodStart = now;
+        periodEnd = new Date(periodStart);
+        periodEnd.setMonth(periodEnd.getMonth() + 1);
+    } else if (needsReset || needsPlanFix) {
+        const nextAnchor = needsReset ? now : periodStart;
+        const { error } = await supabase
             .from("profiles")
             .update({
                 billing_plan: plan,
                 billing_status: "active",
-                billing_cycle_anchor: needsReset || isInvalidDate ? now.toISOString() : safeAnchor.toISOString(),
+                billing_cycle_anchor: nextAnchor.toISOString(),
             })
             .eq("id", userId);
+        if (error) throw error;
+        periodStart = nextAnchor;
+        periodEnd = new Date(periodStart);
+        periodEnd.setMonth(periodEnd.getMonth() + 1);
     }
 
-    const normalizedStart = needsReset ? now : safeAnchor;
-    const normalizedEnd = new Date(normalizedStart);
-    normalizedEnd.setMonth(normalizedEnd.getMonth() + 1);
-
-    return { plan, periodStart: normalizedStart, periodEnd: normalizedEnd };
+    return { plan, periodStart, periodEnd };
 }
 
 export async function getBillingUsage(

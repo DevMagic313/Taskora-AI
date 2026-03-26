@@ -124,10 +124,17 @@ If no changes are needed, return an empty array [].`;
                 reason: (s.reason as string).trim(),
             }));
 
-        await supabase.from("ai_usage_events").insert({
+        const { error: usageError } = await supabase.from("ai_usage_events").insert({
             user_id: user.id,
             feature: "reprioritize",
         });
+        if (usageError) {
+            console.error("Failed to record AI usage event:", usageError);
+            return NextResponse.json(
+                { status: "error", message: "Could not record AI usage. Please try again." },
+                { status: 500 }
+            );
+        }
 
         return NextResponse.json({ status: "success", data: sanitized });
     } catch (error: unknown) {
