@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { ensureBillingProfile } from "@/features/billing/server";
+import { PLAN_CONFIG } from "@/features/billing/constants";
 
 // GET: Fetch all tasks for authenticated user
 // POST: Create a new task
@@ -44,6 +46,25 @@ export async function POST(request: Request) {
     }
 
     try {
+        const { plan } = await ensureBillingProfile(supabase, user.id);
+        const taskLimit = PLAN_CONFIG[plan].taskLimit;
+
+        if (taskLimit !== -1) {
+            const { count, error: countError } = await supabase
+                .from("tasks")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", user.id);
+
+            if (countError) throw countError;
+
+            if ((count || 0) >= taskLimit) {
+                return NextResponse.json(
+                    { status: "error", message: `Task limit of ${taskLimit} reached for your current plan. Please upgrade to create more tasks.` },
+                    { status: 403 }
+                );
+            }
+        }
+
         const body = await request.json();
         const { title, description, priority, category, dueDate, start_date, assigned_to, checked, comments, notes, remarks, status } = body;
 
