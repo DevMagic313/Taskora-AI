@@ -31,7 +31,8 @@ export async function ensureBillingProfile(
         .single<BillingProfileRow>();
 
     const now = new Date();
-    const plan = isValidPlan(profile?.billing_plan ?? null) ? profile!.billing_plan : "starter";
+    const storedPlan = profile?.billing_plan ?? null;
+    const plan = isValidPlan(storedPlan) ? storedPlan : "starter";
     const anchor = profile?.billing_cycle_anchor ? new Date(profile.billing_cycle_anchor) : now;
 
     const isInvalidDate = Number.isNaN(anchor.getTime());
