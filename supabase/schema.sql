@@ -562,3 +562,42 @@ insert into public.workspace_members (workspace_id, user_id, role)
 select id, owner_id, 'owner'
 from public.workspaces
 on conflict (workspace_id, user_id) do nothing;
+
+-- =========================
+-- AUTO ACCEPT PENDING INVITES RPC
+-- =========================
+create or replace function public.accept_pending_invites()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+    v_user_id uuid;
+    v_user_email text;
+    v_invite record;
+begin
+    v_user_id := auth.uid();
+    v_user_email := auth.email();
+
+    if v_user_id is null or v_user_email is null then
+        return;
+    end if;
+
+    for v_invite in 
+        select id, workspace_id, role 
+        from public.workspace_invites 
+        where email = v_user_email and accepted_at is null
+    loop
+        -- Insert into members
+        insert into public.workspace_members (workspace_id, user_id, role, invited_by)
+        values (v_invite.workspace_id, v_user_id, v_invite.role, v_user_id)
+        on conflict (workspace_id, user_id) do update set role = excluded.role;
+
+        -- Mark invite as accepted
+        update public.workspace_invites
+        set accepted_at = now()
+        where id = v_invite.id;
+    end loop;
+end;
+$$;

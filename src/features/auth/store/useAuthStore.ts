@@ -57,6 +57,9 @@ export const useAuthStore = create<AuthState>((set) => ({
                 isLoading: false,
             });
 
+            // Auto-accept any pending workspace invites for this user
+            await supabase.rpc('accept_pending_invites');
+
             // Fetch profile table for accurate display name and avatar
             const { data: profile } = await supabase
                 .from("profiles")
@@ -91,6 +94,13 @@ export const useAuthStore = create<AuthState>((set) => ({
                     isAuthenticated: true,
                     isLoading: false,
                 });
+
+                // Auto-accept any pending workspace invites for this user
+                const acceptInvites = async () => {
+                    const { error } = await supabase.rpc('accept_pending_invites');
+                    if (error) console.error("Auto-accept invites error:", error);
+                };
+                acceptInvites();
 
                 // Fetch accurate name from profiles table
                 const fetchProfile = async () => {
