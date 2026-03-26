@@ -59,7 +59,7 @@ export default function LandingPage() {
                     name: "Is Taskora AI free to use?",
                     acceptedAnswer: {
                       "@type": "Answer",
-                      text: "Yes, Taskora AI offers a free Starter plan with up to 50 tasks and basic AI generation. Paid plans are coming soon.",
+                      text: "Yes. Taskora AI offers a free Starter plan with 15 AI generations per month, and paid plans unlock much higher limits.",
                     },
                   },
                   {
@@ -211,7 +211,7 @@ export default function LandingPage() {
                 name="Starter"
                 price="Free"
                 description="Perfect for individuals getting started."
-                features={["Up to 50 tasks", "Basic AI generation", "Email support", "1 workspace"]}
+                features={["Up to 50 tasks", "15 AI generations / month", "Email support", "1 workspace"]}
                 buttonText="Get Started"
                 onButtonClick={() => router.push('/register')}
               />
@@ -220,21 +220,19 @@ export default function LandingPage() {
                 price="$12"
                 period="/month"
                 description="For power users and small teams."
-                features={["Unlimited tasks", "Advanced AI with GPT-4", "Priority support", "10 workspaces", "Analytics dashboard", "Custom categories"]}
-                buttonText="Coming Soon"
-                onButtonClick={() => { }}
+                features={["Unlimited tasks", "250 AI generations / month", "Priority support", "10 workspaces", "Analytics dashboard", "Custom categories"]}
+                buttonText="Choose Pro"
+                onButtonClick={() => router.push('/pricing')}
                 featured
-                comingSoon
               />
               <PricingCard
                 name="Team"
                 price="$49"
                 period="/month"
                 description="For organizations that need full control."
-                features={["Everything in Pro", "Unlimited workspaces", "SSO & SAML", "Dedicated support", "Custom integrations", "SLA guarantee", "Admin controls"]}
-                buttonText="Coming Soon"
-                onButtonClick={() => { }}
-                comingSoon
+                features={["Everything in Pro", "1,500 AI generations / month", "Unlimited workspaces", "Dedicated support", "Custom integrations", "Admin controls"]}
+                buttonText="Choose Team"
+                onButtonClick={() => router.push('/pricing')}
               />
             </div>
           </div>

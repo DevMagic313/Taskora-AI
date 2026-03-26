@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getBillingUsage } from "@/features/billing/server";
 
 interface ChatMessage {
     role: "user" | "assistant";
@@ -32,6 +33,20 @@ export async function POST(request: Request) {
                 status: 400,
                 headers: { "Content-Type": "application/json" },
             });
+        }
+
+        const usage = await getBillingUsage(supabase, user.id);
+        if (usage.used >= usage.monthlyLimit) {
+            return new Response(
+                JSON.stringify({
+                    error: `You have reached your ${usage.planName} AI limit for this billing cycle.`,
+                    data: usage,
+                }),
+                {
+                    status: 402,
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
         }
 
         const groqApiKey = process.env.GROQ_API_KEY;
@@ -81,6 +96,11 @@ export async function POST(request: Request) {
                 headers: { "Content-Type": "application/json" },
             });
         }
+
+        await supabase.from("ai_usage_events").insert({
+            user_id: user.id,
+            feature: "assistant_chat",
+        });
 
         const encoder = new TextEncoder();
         const decoder = new TextDecoder();

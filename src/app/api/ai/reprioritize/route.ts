@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { getBillingUsage } from "@/features/billing/server";
 
 interface TaskInput {
     id: string;
@@ -23,6 +24,18 @@ export async function POST(request: Request) {
 
         if (!Array.isArray(tasks) || tasks.length === 0) {
             return NextResponse.json({ status: "error", message: "Tasks array is required" }, { status: 400 });
+        }
+
+        const usage = await getBillingUsage(supabase, user.id);
+        if (usage.used >= usage.monthlyLimit) {
+            return NextResponse.json(
+                {
+                    status: "error",
+                    message: `You have reached your ${usage.planName} AI limit for this billing cycle.`,
+                    data: usage,
+                },
+                { status: 402 }
+            );
         }
 
         const groqApiKey = process.env.GROQ_API_KEY;
@@ -110,6 +123,11 @@ If no changes are needed, return an empty array [].`;
                 suggestedPriority: s.suggestedPriority as string,
                 reason: (s.reason as string).trim(),
             }));
+
+        await supabase.from("ai_usage_events").insert({
+            user_id: user.id,
+            feature: "reprioritize",
+        });
 
         return NextResponse.json({ status: "success", data: sanitized });
     } catch (error: unknown) {

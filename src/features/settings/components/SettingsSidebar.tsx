@@ -15,6 +15,7 @@ import {
     Puzzle,
     Trash2,
     Lock,
+    CreditCard,
 } from "lucide-react";
 
 interface NavItem {
@@ -38,6 +39,7 @@ const settingsNav: NavGroup[] = [
             { label: "Appearance", href: "/settings/appearance", icon: Palette },
             { label: "Notifications", href: "/settings/notifications", icon: Bell },
             { label: "Security", href: "/settings/security", icon: Lock },
+            { label: "Billing", href: "/settings/billing", icon: CreditCard },
         ],
     },
     {

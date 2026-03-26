@@ -16,6 +16,9 @@ create table public.profiles (
     bio text,
     timezone text,
     language text default 'en',
+    billing_plan text default 'starter',
+    billing_status text default 'active',
+    billing_cycle_anchor timestamptz default now(),
     notification_preferences jsonb default '{}'::jsonb,
     fcm_token text,
     created_at timestamptz default now(),
@@ -117,6 +120,25 @@ create table if not exists public.ai_generation_history (
     created_at timestamptz default now()
 );
 
+create table if not exists public.ai_usage_events (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null references auth.users(id) on delete cascade,
+    feature text default 'generation',
+    created_at timestamptz default now()
+);
+
+create table if not exists public.billing_transactions (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null references auth.users(id) on delete cascade,
+    plan text check (plan in ('pro', 'team')) not null,
+    amount_cents integer not null,
+    status text check (status in ('succeeded', 'failed')) default 'succeeded',
+    payment_method text default 'dummy_card',
+    card_last4 text,
+    metadata jsonb default '{}'::jsonb,
+    created_at timestamptz default now()
+);
+
 -- =========================
 -- SAFEGUARD FOR EXISTING TABLES
 -- =========================
@@ -165,6 +187,15 @@ IF EXISTS (
         ADD COLUMN IF NOT EXISTS invited_by uuid 
         REFERENCES auth.users(id) ON DELETE SET NULL;
 END IF;
+
+IF EXISTS (
+    SELECT FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'profiles'
+) THEN
+    ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS billing_plan text default 'starter';
+    ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS billing_status text default 'active';
+    ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS billing_cycle_anchor timestamptz default now();
+END IF;
 END $$;
 
 -- =========================
@@ -182,6 +213,10 @@ create index if not exists idx_logs_user_time
     on public.task_logs(user_id, created_at desc);
 create index if not exists idx_ai_history_user_created 
     on public.ai_generation_history(user_id, created_at desc);
+create index if not exists idx_ai_usage_events_user_created
+    on public.ai_usage_events(user_id, created_at desc);
+create index if not exists idx_billing_transactions_user_created
+    on public.billing_transactions(user_id, created_at desc);
 create index if not exists idx_workspace_members_workspace 
     on public.workspace_members(workspace_id);
 create index if not exists idx_workspace_members_user 
@@ -274,6 +309,8 @@ alter table public.workspace_members enable row level security;
 alter table public.workspace_invites enable row level security;
 alter table public.api_keys enable row level security;
 alter table public.ai_generation_history enable row level security;
+alter table public.ai_usage_events enable row level security;
+alter table public.billing_transactions enable row level security;
 
 -- =========================
 -- HELPER FUNCTIONS (RLS)
@@ -462,6 +499,24 @@ create policy "Users can view own ai history" on public.ai_generation_history
     for select using (auth.uid() = user_id);
 
 create policy "Users can insert own ai history" on public.ai_generation_history
+    for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Users can view own ai usage" on public.ai_usage_events;
+drop policy if exists "Users can insert own ai usage" on public.ai_usage_events;
+
+create policy "Users can view own ai usage" on public.ai_usage_events
+    for select using (auth.uid() = user_id);
+
+create policy "Users can insert own ai usage" on public.ai_usage_events
+    for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Users can view own billing transactions" on public.billing_transactions;
+drop policy if exists "Users can insert own billing transactions" on public.billing_transactions;
+
+create policy "Users can view own billing transactions" on public.billing_transactions
+    for select using (auth.uid() = user_id);
+
+create policy "Users can insert own billing transactions" on public.billing_transactions
     for insert with check (auth.uid() = user_id);
 
 -- =========================
