@@ -12,7 +12,7 @@
 # Taskora AI
 **AI-Powered Task Management for Modern Teams**
 
-[Live Demo](#) · [Report Bug](#) · [Request Feature](#)
+[Live Demo](https://taskora-ai-gh.vercel.app/) · [Report Bug](https://github.com/DevMagic313/Taskora-AI/issues/new?labels=bug&title=%5BBug%5D%3A+) · [Request Feature](https://github.com/DevMagic313/Taskora-AI/issues/new?labels=enhancement&title=%5BFeature%5D%3A+)
 </div>
 
 ## 📑 Table of Contents
