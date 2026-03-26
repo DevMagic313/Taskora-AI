@@ -101,10 +101,17 @@ export async function POST(request: Request) {
             });
         }
 
-        await supabase.from("ai_usage_events").insert({
+        const { error: usageError } = await supabase.from("ai_usage_events").insert({
             user_id: user.id,
             feature: "assistant_chat",
         });
+        if (usageError) {
+            console.error("Failed to record AI usage event:", usageError);
+            return new Response(JSON.stringify({ error: "Could not record AI usage. Please try again." }), {
+                status: 500,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
 
         const encoder = new TextEncoder();
         const decoder = new TextDecoder();

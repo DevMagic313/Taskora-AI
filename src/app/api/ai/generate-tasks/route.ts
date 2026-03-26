@@ -126,10 +126,17 @@ Example output format:
             }))
             .filter((task: { title: string }) => task.title.length > 0);
 
-        await supabase.from("ai_usage_events").insert({
+        const { error: usageError } = await supabase.from("ai_usage_events").insert({
             user_id: user.id,
             feature: "generation",
         });
+        if (usageError) {
+            console.error("Failed to record AI usage event:", usageError);
+            return NextResponse.json(
+                { status: "error", message: "Could not record AI usage. Please try again." },
+                { status: 500 }
+            );
+        }
 
         return NextResponse.json({ status: "success", data: sanitizedTasks });
     } catch (error: unknown) {
