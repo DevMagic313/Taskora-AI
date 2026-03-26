@@ -38,6 +38,17 @@ export interface ChatMessage {
     content: string;
 }
 
+export class ApiError extends Error {
+    status: number;
+    details?: unknown;
+
+    constructor(message: string, status: number, details?: unknown) {
+        super(message);
+        this.status = status;
+        this.details = details;
+    }
+}
+
 export const aiApi = {
     /**
      * Generate tasks from a prompt via Groq.
@@ -50,7 +61,7 @@ export const aiApi = {
         });
         const data = await res.json();
         if (!res.ok) {
-            throw new Error(data.message || "Failed to generate tasks");
+            throw new ApiError(data.message || "Failed to generate tasks", res.status, data?.data);
         }
         return data.data;
     },

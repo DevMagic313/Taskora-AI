@@ -1,4 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import { getBillingUsage } from "@/features/billing/server";
+import {
+    buildTaskoraAssistantPrompt,
+    summarizeTaskContext,
+} from "@/features/ai/prompts/taskoraAssistantPrompt";
 
 interface ChatMessage {
     role: "user" | "assistant";
@@ -34,6 +39,20 @@ export async function POST(request: Request) {
             });
         }
 
+        const usage = await getBillingUsage(supabase, user.id);
+        if (usage.used >= usage.monthlyLimit) {
+            return new Response(
+                JSON.stringify({
+                    error: `You have reached your ${usage.planName} AI limit for this billing cycle.`,
+                    data: usage,
+                }),
+                {
+                    status: 402,
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+        }
+
         const groqApiKey = process.env.GROQ_API_KEY;
         if (!groqApiKey) {
             return new Response(JSON.stringify({ error: "Groq API key is not configured" }), {
@@ -42,11 +61,11 @@ export async function POST(request: Request) {
             });
         }
 
-        const taskSummary = Array.isArray(tasks) && tasks.length > 0
-            ? tasks.map((t) => `- "${t.title}" (priority: ${t.priority}, status: ${t.status}${t.due_date ? `, due: ${t.due_date}` : ""})`).join("\n")
-            : "No tasks yet.";
-
-        const systemPrompt = `You are a friendly, helpful productivity assistant for Taskora AI. The user has these tasks:\n${taskSummary}\n\nHelp them prioritize, plan, and stay productive. Keep responses concise and actionable. Use bullet points where helpful. Today's date is ${new Date().toISOString().split("T")[0]}.`;
+        const taskSummary = summarizeTaskContext(Array.isArray(tasks) ? tasks : []);
+        const systemPrompt = buildTaskoraAssistantPrompt({
+            today: new Date().toISOString().split("T")[0],
+            taskSummary,
+        });
 
         const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
@@ -81,6 +100,11 @@ export async function POST(request: Request) {
                 headers: { "Content-Type": "application/json" },
             });
         }
+
+        await supabase.from("ai_usage_events").insert({
+            user_id: user.id,
+            feature: "assistant_chat",
+        });
 
         const encoder = new TextEncoder();
         const decoder = new TextDecoder();

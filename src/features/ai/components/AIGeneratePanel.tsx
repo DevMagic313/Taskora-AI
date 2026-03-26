@@ -6,9 +6,11 @@ import {
     Type, RefreshCw, Clock, History, X, ChevronDown, ChevronUp, GripVertical,
 } from "lucide-react";
 import { aiApi } from "@/features/ai/services/aiApi";
+import { ApiError } from "@/features/ai/services/aiApi";
 import type { GeneratedTask, GenerationHistoryEntry } from "@/features/ai/services/aiApi";
 import { useTaskStore } from "@/features/tasks/store/useTaskStore";
 import { Button } from "@/components/ui/Button";
+import { billingApi, type BillingUsageResponse } from "@/features/billing/api";
 
 const EXAMPLE_PROMPTS = [
     "Build a full-stack e-commerce platform with React and Node.js",
@@ -48,6 +50,8 @@ export function AIGeneratePanel() {
     const [history, setHistory] = useState<GenerationHistoryEntry[]>([]);
     const [showHistory, setShowHistory] = useState(false);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+    const [usage, setUsage] = useState<BillingUsageResponse | null>(null);
+    const [showUpgradePopup, setShowUpgradePopup] = useState(false);
 
     const { createTask } = useTaskStore();
 
@@ -67,6 +71,12 @@ export function AIGeneratePanel() {
         loadHistory();
     }, [loadHistory]);
 
+    useEffect(() => {
+        billingApi.getUsage().then(setUsage).catch(() => {
+            // silent fail
+        });
+    }, []);
+
     const handleGenerate = async (goalOverride?: string) => {
         const goal = goalOverride || prompt;
         if (!goal.trim()) return;
@@ -78,9 +88,17 @@ export function AIGeneratePanel() {
         try {
             const tasks = await aiApi.generateTasks(goal);
             setGeneratedTasks(tasks);
+            billingApi.getUsage().then(setUsage).catch(() => {
+                // silent fail
+            });
             // Save to history in background
             aiApi.saveGenerationHistory(goal, tasks).then(() => loadHistory()).catch(() => { /* silent */ });
         } catch (err: unknown) {
+            if (err instanceof ApiError && err.status === 402) {
+                setShowUpgradePopup(true);
+                const usageFromError = err.details as BillingUsageResponse | undefined;
+                if (usageFromError?.monthlyLimit !== undefined) setUsage(usageFromError);
+            }
             setError(err instanceof Error ? err.message : "Failed to generate tasks.");
         } finally {
             setIsGenerating(false);
@@ -190,7 +208,10 @@ export function AIGeneratePanel() {
                 </div>
                 <div className="mt-8 flex items-center justify-between border-t border-border/40 pt-6">
                     <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground/50 font-medium hidden sm:block">Powered by Groq LLM inference</span>
+                        <span className="text-xs text-muted-foreground/50 font-medium hidden sm:block">
+                            Powered by Groq LLM inference
+                            {usage ? ` • ${usage.remaining}/${usage.monthlyLimit} AI generations left` : ""}
+                        </span>
                         {/* History Toggle */}
                         <button
                             onClick={() => setShowHistory(!showHistory)}
@@ -381,6 +402,21 @@ export function AIGeneratePanel() {
                                 </div>
                             );
                         })}
+                    </div>
+                </div>
+            )}
+
+            {showUpgradePopup && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-md rounded-2xl border border-border bg-background p-6 shadow-2xl">
+                        <h3 className="text-lg font-bold">AI limit reached</h3>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            You used all {usage?.monthlyLimit ?? 0} AI generations in your current plan. Upgrade to continue generating AI blueprints.
+                        </p>
+                        <div className="mt-5 flex gap-3 justify-end">
+                            <Button variant="outline" onClick={() => setShowUpgradePopup(false)}>Maybe later</Button>
+                            <Button onClick={() => { window.location.href = "/pricing"; }}>Upgrade plan</Button>
+                        </div>
                     </div>
                 </div>
             )}
