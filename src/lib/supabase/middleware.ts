@@ -29,9 +29,15 @@ export async function updateSession(request: NextRequest) {
         }
     );
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    let user = null;
+    try {
+        const { data } = await supabase.auth.getUser();
+        user = data.user;
+    } catch (e) {
+        // If Supabase API is down or throws "fetch failed" in Edge,
+        // we fail gracefully and treat the user as unauthenticated.
+        console.error("Middleware Supabase getUser error:", e);
+    }
 
     // Protected routes: redirect to login if not authenticated
     const protectedPaths = [
