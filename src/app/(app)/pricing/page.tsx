@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CreditCard, Check, Sparkles, Star } from "lucide-react";
+import { CreditCard, Check, Sparkles, Star, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import toast from "react-hot-toast";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -30,6 +30,16 @@ export default function PricingPage() {
             }),
         []
     );
+
+    const getButtonText = (planKey: string, planCta: string) => {
+        if (!usage) return planCta;
+        if (usage.plan === planKey) return "Current Plan";
+        const planLevels = { starter: 0, pro: 1, team: 2 };
+        const currentLevel = planLevels[usage.plan as keyof typeof planLevels] ?? 0;
+        const targetLevel = planLevels[planKey as keyof typeof planLevels] ?? 0;
+        if (targetLevel < currentLevel) return "Downgrade";
+        return `Upgrade to ${PLAN_CONFIG[planKey as BillingPlan]?.name ?? planKey}`;
+    };
 
     useEffect(() => {
         billingApi.getUsage().then(setUsage).catch(() => {
@@ -76,6 +86,22 @@ export default function PricingPage() {
                 )}
             </div>
 
+            {usage && usage.plan !== "starter" && (
+                <div className="relative z-10 max-w-2xl mx-auto mb-8 animate-fade-in">
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800/40 dark:bg-emerald-900/10 px-6 py-4 flex items-center gap-4 shadow-sm">
+                        <CheckCircle2 className="h-6 w-6 text-emerald-500 shrink-0" />
+                        <div>
+                            <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                                You are on the {usage.planName} plan
+                            </p>
+                            <p className="text-xs text-emerald-600 dark:text-emerald-500 mt-0.5">
+                                {usage.remaining} AI generations remaining this month
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="relative z-10 grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
                 {plans.map((plan) => {
                     const isCurrent = usage?.plan === plan.key;
@@ -115,20 +141,28 @@ export default function PricingPage() {
                                     ))}
                                 </ul>
 
-                                <Button
-                                    variant={isCurrent ? "secondary" : plan.featured ? "primary" : "outline"}
-                                    className={`w-full ${plan.featured ? "shadow-lg shadow-primary/20" : ""}`}
-                                    onClick={() => {
-                                        if (isCurrent) return;
-                                        if (plan.key === "starter") {
-                                            toast.success("You are already on the free Starter plan.");
-                                            return;
-                                        }
-                                        setSelectedPlan(plan.key);
-                                    }}
-                                >
-                                    {isCurrent ? "Current Plan" : plan.cta}
-                                </Button>
+                                {isCurrent && usage?.plan !== "starter" ? (
+                                    <div className="w-full flex items-center justify-center gap-2 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
+                                        <CheckCircle2 className="h-5 w-5" />
+                                        <span className="text-sm font-bold">Active Plan</span>
+                                    </div>
+                                ) : (
+                                    <Button
+                                        variant={isCurrent ? "secondary" : plan.featured ? "primary" : "outline"}
+                                        className={`w-full ${plan.featured ? "shadow-lg shadow-primary/20" : ""} ${getButtonText(plan.key, plan.cta) === "Downgrade" || isCurrent ? "opacity-60 grayscale" : ""}`}
+                                        disabled={getButtonText(plan.key, plan.cta) === "Downgrade" || isCurrent}
+                                        onClick={() => {
+                                            if (isCurrent) return;
+                                            if (plan.key === "starter") {
+                                                toast.success("You are already on the free Starter plan.");
+                                                return;
+                                            }
+                                            setSelectedPlan(plan.key);
+                                        }}
+                                    >
+                                        {getButtonText(plan.key, plan.cta)}
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     );

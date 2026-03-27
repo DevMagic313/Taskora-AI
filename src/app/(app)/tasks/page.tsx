@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { Plus, ListTodo, SlidersHorizontal, Search, CheckCircle2, Sparkles } from "lucide-react";
+import { Plus, ListTodo, SlidersHorizontal, Search, CheckCircle2, Sparkles, X, Flag, Clock } from "lucide-react";
 import { useTaskStore } from "@/features/tasks/store/useTaskStore";
 import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { TaskFormModal } from "@/features/tasks/components/TaskFormModal";
@@ -168,39 +168,106 @@ export default function TasksPage() {
                 )}
             </div>
 
-            {/* Controls Bar */}
-            <div className="relative z-10 flex flex-col lg:flex-row gap-3 justify-between items-start lg:items-center bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-3 sm:p-4 shadow-sm">
-                <div className="relative w-full lg:max-w-[320px] group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <input type="search" placeholder="Search tasks by title or context..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full h-12 pl-12 pr-4 rounded-xl border-2 border-input bg-background/50 text-base font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-all shadow-sm" />
+            {/* Controls Bar - Improved UI */}
+            <div className="relative z-10 flex flex-col gap-3 bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl p-4 shadow-sm">
+
+                {/* Search Row */}
+                <div className="relative w-full group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none" />
+                    <input
+                        type="search"
+                        placeholder="Search tasks by title or context..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full h-11 pl-10 pr-4 rounded-xl border border-input bg-background/50 text-sm font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary transition-all"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                            aria-label="Clear search"
+                        >
+                            <X className="h-3 w-3" />
+                        </button>
+                    )}
                 </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full lg:w-auto overflow-x-auto pb-2 sm:pb-0">
-                    <div className="flex items-center gap-3 shrink-0">
-                        <div className="flex items-center gap-2">
-                            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 hidden sm:block mt-0.5">Status</span>
-                        </div>
-                        <div className="flex p-1 rounded-xl bg-muted/50 border border-border/60 shadow-inner">
+
+                {/* Filters Row */}
+                <div className="flex flex-wrap items-center gap-3">
+
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap">Status</span>
+                        <div className="flex items-center bg-muted/60 rounded-xl p-1 border border-border/50">
                             {(["all", "pending", "completed"] as const).map((s) => (
-                                <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1.5 text-xs font-bold rounded-lg capitalize transition-all duration-300 flex items-center gap-1.5 ${statusFilter === s ? "bg-background text-foreground shadow-sm ring-1 ring-border scale-[1.02]" : "text-muted-foreground hover:text-foreground hover:bg-background/40"}`}>
-                                    {s}
-                                    <span className={`text-[10px] tabular-nums ${statusFilter === s ? "text-primary font-black" : "text-muted-foreground/60"}`}>{statusCounts[s]}</span>
+                                <button
+                                    key={s}
+                                    onClick={() => setStatusFilter(s)}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${statusFilter === s
+                                            ? "bg-background text-foreground shadow-sm"
+                                            : "text-muted-foreground hover:text-foreground"
+                                        }`}
+                                >
+                                    {s === "all" && <SlidersHorizontal className="h-3 w-3" />}
+                                    {s === "pending" && <Clock className="h-3 w-3" />}
+                                    {s === "completed" && <CheckCircle2 className="h-3 w-3" />}
+                                    <span className="capitalize">{s}</span>
+                                    <span className={`text-[10px] font-bold rounded-full px-1 min-w-[16px] text-center ${statusFilter === s
+                                            ? "bg-primary/10 text-primary"
+                                            : "bg-muted text-muted-foreground/60"
+                                        }`}>
+                                        {statusCounts[s]}
+                                    </span>
                                 </button>
                             ))}
                         </div>
                     </div>
-                    <div className="w-px h-8 bg-border/80 hidden lg:block shrink-0" />
-                    <div className="flex items-center gap-3 shrink-0">
-                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 hidden sm:block mt-0.5">Priority</span>
-                        <div className="flex p-1 rounded-xl bg-muted/50 border border-border/60 shadow-inner">
+
+                    {/* Divider */}
+                    <div className="h-6 w-px bg-border hidden sm:block" />
+
+                    {/* Priority Filter */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap">Priority</span>
+                        <div className="flex items-center bg-muted/60 rounded-xl p-1 border border-border/50">
                             {(["all", "low", "medium", "high"] as const).map((p) => (
-                                <button key={p} onClick={() => setPriorityFilter(p)} className={`px-3 py-1.5 text-xs font-bold rounded-lg capitalize transition-all duration-300 flex items-center gap-1.5 ${priorityFilter === p ? "bg-background text-foreground shadow-sm ring-1 ring-border scale-[1.02]" : "text-muted-foreground hover:text-foreground hover:bg-background/40"}`}>
-                                    {p}
-                                    <span className={`text-[10px] tabular-nums ${priorityFilter === p ? "text-primary font-black" : "text-muted-foreground/60"}`}>{priorityCounts[p]}</span>
+                                <button
+                                    key={p}
+                                    onClick={() => setPriorityFilter(p)}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${priorityFilter === p
+                                            ? "bg-background text-foreground shadow-sm"
+                                            : "text-muted-foreground hover:text-foreground"
+                                        }`}
+                                >
+                                    {p === "high" && priorityFilter === p && <Flag className="h-3 w-3 text-red-500" />}
+                                    {p === "medium" && priorityFilter === p && <Flag className="h-3 w-3 text-amber-500" />}
+                                    {p === "low" && priorityFilter === p && <Flag className="h-3 w-3 text-blue-500" />}
+                                    <span className="capitalize">{p}</span>
+                                    <span className={`text-[10px] font-bold rounded-full px-1 min-w-[16px] text-center ${priorityFilter === p
+                                            ? "bg-primary/10 text-primary"
+                                            : "bg-muted text-muted-foreground/60"
+                                        }`}>
+                                        {priorityCounts[p]}
+                                    </span>
                                 </button>
                             ))}
                         </div>
                     </div>
+
+                    {/* Active filters reset */}
+                    {(statusFilter !== "all" || priorityFilter !== "all" || searchQuery) && (
+                        <button
+                            onClick={() => {
+                                setStatusFilter("all");
+                                setPriorityFilter("all");
+                                setSearchQuery("");
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                        >
+                            <X className="h-3 w-3" />
+                            Clear filters
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -240,7 +307,7 @@ export default function TasksPage() {
             ) : (
                 <div className="relative z-10 grid gap-4 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 auto-rows-max items-start min-h-[400px]">
                     {filteredTasks.map((task, index) => (
-                        <div key={task.id} className="animate-stagger-in" style={{ animationDelay: `${index * 50}ms` }}>
+                        <div key={task.id} className="animate-stagger-in">
                             <TaskCard task={task} onToggleStatus={handleToggleStatus} onDelete={handleDelete} onEdit={handleEdit} />
                         </div>
                     ))}

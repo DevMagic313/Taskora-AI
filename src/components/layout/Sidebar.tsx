@@ -15,6 +15,7 @@ import {
     ChevronRight,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { billingApi } from "@/features/billing/api";
 
 const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -38,8 +39,13 @@ export function Sidebar() {
     const pathname = usePathname();
     const [collapsed, setCollapsed] = useState(false);
     const [sidebarStyle, setSidebarStyle] = useState<string>("default");
+    const [userPlan, setUserPlan] = useState<string | null>(null);
 
     useEffect(() => {
+        billingApi.getUsage()
+          .then((u) => setUserPlan(u.plan))
+          .catch(() => setUserPlan("starter"));
+
         const getStyle = () => {
             const root = document.documentElement;
             if (root.classList.contains("sidebar-minimal")) setSidebarStyle("minimal");
@@ -117,7 +123,7 @@ export function Sidebar() {
                 </nav>
 
                 {/* Pro Card */}
-                {sidebarStyle === "default" && !collapsed && (
+                {sidebarStyle === "default" && !collapsed && userPlan === "starter" && (
                     <div className="mx-3 mt-6 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 p-5 shadow-sm">
                         <div className="flex items-center gap-2 mb-2">
                             <Sparkles className="h-4 w-4 text-primary" />

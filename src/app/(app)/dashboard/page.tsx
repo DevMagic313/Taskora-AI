@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-    CheckCircle2, Clock, TrendingUp, Sparkles, ArrowRight, ListTodo, Plus, Target,
+    CheckCircle2, Clock, TrendingUp, Sparkles, ArrowRight, ListTodo, Plus, Target, Lock
 } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { useTaskStore } from "@/features/tasks/store/useTaskStore";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
+import { billingApi, type BillingUsageResponse } from "@/features/billing/api";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +20,14 @@ export default function DashboardPage() {
     const { tasks, isLoading, fetchTasks } = useTaskStore();
     const router = useRouter();
 
+    const [usage, setUsage] = useState<BillingUsageResponse | null>(null);
+
     useEffect(() => {
         fetchTasks();
+        billingApi.getUsage().then((u) => setUsage(u)).catch(() => {});
     }, [fetchTasks]);
+
+    const usageMaxed = usage ? usage.used >= usage.monthlyLimit : false;
 
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter((t) => t.status === "completed").length;
@@ -99,7 +105,6 @@ export default function DashboardPage() {
                                 <div
                                     key={task.id}
                                     className="group flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-5 rounded-2xl border border-border/40 bg-zinc-50/50 dark:bg-zinc-900/40 p-4 sm:p-5 transition-all duration-300 hover:bg-white dark:hover:bg-zinc-800/80 hover:shadow-md hover:-translate-y-0.5 animate-stagger-in"
-                                    style={{ animationDelay: `${index * 60}ms` }}
                                 >
                                     <div className={`flex shrink-0 h-10 w-10 items-center justify-center rounded-xl transition-colors ${task.status === "completed"
                                         ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50"
@@ -198,14 +203,19 @@ export default function DashboardPage() {
                     <div className="rounded-2xl sm:rounded-3xl border border-border/50 bg-gradient-to-b from-card to-background p-4 sm:p-8 shadow-sm">
                         <h3 className="text-lg font-bold tracking-tight mb-6">Quick Tools</h3>
                         <div className="grid gap-3">
-                            <Link href="/ai-planning" className="group flex items-center justify-between rounded-2xl border border-primary/20 bg-primary/5 p-4 transition-all hover:bg-primary/10 hover:border-primary/30 hover:-translate-y-0.5">
+                            <Link 
+                              href={usageMaxed ? "/pricing" : "/ai-planning"} 
+                              className={`group flex items-center justify-between rounded-2xl border p-4 transition-all hover:-translate-y-0.5 ${usageMaxed ? "opacity-60 border-amber-200 bg-amber-50/30 dark:bg-amber-900/10 hover:bg-amber-50/50" : "border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/30"}`}
+                            >
                                 <div className="flex items-center gap-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm shadow-primary/20 transition-transform group-hover:scale-110 group-hover:rotate-6">
-                                        <Sparkles className="h-5 w-5" />
+                                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl shadow-sm transition-transform group-hover:scale-110 ${usageMaxed ? "bg-amber-500/10 text-amber-500" : "bg-primary text-primary-foreground shadow-primary/20"}`}>
+                                        {usageMaxed ? <Lock className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold">AI Generation</p>
-                                        <p className="text-xs text-muted-foreground pr-2 font-medium">Auto-build tasks</p>
+                                        <p className="text-sm font-bold">{usageMaxed ? "AI Limit Reached" : "AI Generation"}</p>
+                                        <p className="text-xs text-muted-foreground pr-2 font-medium">
+                                            {usageMaxed ? "Upgrade to continue" : "Auto-build tasks"}
+                                        </p>
                                     </div>
                                 </div>
                                 <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
