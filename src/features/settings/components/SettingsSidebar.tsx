@@ -50,7 +50,7 @@ const settingsNav: NavGroup[] = [
         items: [
             { label: "General", href: "/settings/workspace/general", icon: Building2 },
             { label: "Members", href: "/settings/members", icon: Users, comingSoon: false },
-            { label: "Roles & Permissions", href: "/settings/roles", icon: ShieldCheck, comingSoon: true },
+            { label: "Roles & Permissions", href: "/settings/roles", icon: ShieldCheck, comingSoon: false },
         ],
     },
     {

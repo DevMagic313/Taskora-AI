@@ -76,6 +76,7 @@ create table if not exists public.api_keys (
 create table if not exists public.tasks (
     id uuid primary key default gen_random_uuid(),
     user_id uuid not null references auth.users(id) on delete cascade,
+    workspace_id uuid references public.workspaces(id) on delete cascade,
     title text not null,
     description text default '',
     category text default 'General',
@@ -160,6 +161,7 @@ IF EXISTS (
     ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS comments text;
     ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS notes text;
     ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS remarks text;
+    ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS workspace_id uuid REFERENCES public.workspaces(id) ON DELETE CASCADE;
     ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS created_at timestamptz default now();
     ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS updated_at timestamptz default now();
     ALTER TABLE public.tasks DROP CONSTRAINT IF EXISTS tasks_status_check;
@@ -207,6 +209,8 @@ create index if not exists idx_tasks_user_due
     on public.tasks(user_id, due_date);
 create index if not exists idx_tasks_user_created 
     on public.tasks(user_id, created_at desc);
+create index if not exists idx_tasks_workspace 
+    on public.tasks(workspace_id);
 create index if not exists idx_logs_task 
     on public.task_logs(task_id);
 create index if not exists idx_logs_user_time 
@@ -396,7 +400,7 @@ create policy "Users can view own workspace members" on public.workspace_members
 create policy "Users can modify workspace members" on public.workspace_members
     for all using (
         public.is_workspace_owner(workspace_id)
-        OR public.is_workspace_admin(workspace_id)
+        OR (public.is_workspace_admin(workspace_id) AND role in ('member', 'viewer'))
     );
 
 -- =========================
@@ -465,17 +469,37 @@ drop policy if exists "Users can create own tasks" on public.tasks;
 drop policy if exists "Users can update own tasks" on public.tasks;
 drop policy if exists "Users can delete own tasks" on public.tasks;
 
-create policy "Users can view own tasks" on public.tasks
-    for select using (auth.uid() = user_id);
+create policy "Users can view workspace tasks" on public.tasks
+    for select using (
+        auth.uid() = user_id 
+        OR public.is_workspace_member(workspace_id)
+    );
 
-create policy "Users can create own tasks" on public.tasks
-    for insert with check (auth.uid() = user_id);
+create policy "Users can create workspace tasks" on public.tasks
+    for insert with check (
+        auth.uid() = user_id 
+        AND (
+            workspace_id IS NULL 
+            OR EXISTS (
+                select 1 from workspace_members
+                where workspace_id = tasks.workspace_id
+                and user_id = auth.uid()
+                and role in ('owner', 'admin', 'member')
+            )
+        )
+    );
 
-create policy "Users can update own tasks" on public.tasks
-    for update using (auth.uid() = user_id);
+create policy "Users can update workspace tasks" on public.tasks
+    for update using (
+        auth.uid() = user_id 
+        OR public.is_workspace_admin(workspace_id)
+    );
 
-create policy "Users can delete own tasks" on public.tasks
-    for delete using (auth.uid() = user_id);
+create policy "Users can delete workspace tasks" on public.tasks
+    for delete using (
+        auth.uid() = user_id 
+        OR public.is_workspace_admin(workspace_id)
+    );
 
 -- =========================
 -- TASK LOGS RLS POLICIES
@@ -562,6 +586,18 @@ insert into public.workspace_members (workspace_id, user_id, role)
 select id, owner_id, 'owner'
 from public.workspaces
 on conflict (workspace_id, user_id) do nothing;
+
+-- =========================
+-- BACKFILL: Link orphan tasks 
+-- to user's first owned workspace
+-- =========================
+update public.tasks
+set workspace_id = (
+    select id from public.workspaces 
+    where owner_id = tasks.user_id 
+    limit 1
+)
+where workspace_id is null;
 
 -- =========================
 -- AUTO ACCEPT PENDING INVITES RPC
