@@ -45,7 +45,8 @@ At its core, Taskora AI utilizes the powerful Groq AI engine (llama-3.3-70b-vers
 
 ### 💼 Team & Workspace
 - **Multi-Role Workspaces**: Granular RBAC supporting Owner, Admin, Member, and Viewer roles.
-- **Team Invitations**: Secure email-based workspace invitations.
+- **Team Invitations**: Secure email-based workspace invitations with zero-friction automated acceptance upon login via Supabase RPC.
+- **Real-time Collaboration**: Instantly synced task updates and workspace activity.
 - **Real-time Collaboration**: Instantly synced task updates and workspace activity.
 
 ### 📊 Analytics
@@ -156,9 +157,10 @@ The front face of Taskora AI, designed to convert visitors into users.
 Secure, SSR-compatible authentication utilizing Supabase.
 - **`/login`**: Email/password authentication paired with a branded marketing panel.
 - **`/register`**: Account creation featuring a dynamic password strength meter.
-- **Middleware**: Protected routes that seamlessly redirect authenticated users to `/dashboard`.
+- **Middleware**: Protected routes that seamlessly redirect authenticated users to `/dashboard`, built with graceful fault-tolerance and fallback mechanisms for Edge network disruptions.
 - **Session Management**: Supabase SSR cookie-based sessions without relying on vulnerable `localStorage` tokens.
 - **Email Confirmation**: Robust email confirmation flow ensuring valid users.
+- **Automated Workspaces**: Securely auto-accepts pending workspace invitations silently in the background via Postgres triggers upon user login.
 
 ### 3. Dashboard (`/dashboard`)
 The central hub for user productivity.
@@ -242,6 +244,7 @@ Browser push notification hub.
 ### 15. Pricing Page (`/pricing`)
 Marketing and conversion centered around available plans.
 - Clear breakdown of Starter (Free), Pro ($12/mo), and Team ($49/mo) capabilities.
+- Backend-enforced limits directly integrating with Supabase to strictly cap Starter users at 50 tasks and 15 AI generations/month.
 - Contains "Coming Soon" badges and "Get notified" waitlist functionality.
 
 ### 16. Public Pages
