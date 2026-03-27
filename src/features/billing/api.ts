@@ -6,6 +6,7 @@ export interface BillingUsageResponse {
     monthlyLimit: number;
     used: number;
     remaining: number;
+    aiPlannerCharLimit: number;
     periodStart: string;
     periodEnd: string;
 }

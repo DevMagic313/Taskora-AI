@@ -12,6 +12,7 @@ interface UseBillingPlanReturn {
   isTeam: boolean;
   isPaid: boolean;
   aiLimitReached: boolean;
+  aiPlannerCharLimit: number;
   canUseAnalytics: boolean;
   canUseMembers: boolean;
   canUseAIReprioritize: boolean;
@@ -46,6 +47,7 @@ export function useBillingPlan(): UseBillingPlanReturn {
     isTeam,
     isPaid,
     aiLimitReached,
+    aiPlannerCharLimit: usage?.aiPlannerCharLimit ?? 500,
     canUseAnalytics: isPaid,
     canUseMembers: isPaid,
     canUseAIReprioritize: isPaid,

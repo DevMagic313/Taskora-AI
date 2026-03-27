@@ -11,6 +11,7 @@ import type { GeneratedTask, GenerationHistoryEntry } from "@/features/ai/servic
 import { useTaskStore } from "@/features/tasks/store/useTaskStore";
 import { Button } from "@/components/ui/Button";
 import { billingApi, type BillingUsageResponse } from "@/features/billing/api";
+import { useBillingPlan } from "@/features/billing/hooks/useBillingPlan";
 
 const EXAMPLE_PROMPTS = [
     "Build a full-stack e-commerce platform with React and Node.js",
@@ -19,21 +20,21 @@ const EXAMPLE_PROMPTS = [
     "Set up a CI/CD pipeline with GitHub Actions and Docker",
 ];
 
-const MAX_CHARS = 500;
+// Max chars logic handled by useBillingPlan hook
+
 
 function SkeletonCard({ delay }: { delay: number }) {
     return (
         <div
-            className="flex items-start gap-4 rounded-2xl border border-border/40 bg-card/40 p-5 animate-fade-in"
-            style={{ animationDelay: `${delay}ms` }}
+            className={`flex items-start gap-4 rounded-2xl border border-border/40 bg-card/40 p-5 animate-fade-in [animation-delay:${delay}ms]`}
         >
             <div className="flex h-12 w-12 shrink-0 rounded-xl bg-muted animate-skeleton" />
             <div className="flex-1 space-y-3">
-                <div className="h-5 w-3/4 rounded-lg bg-muted animate-skeleton" style={{ animationDelay: "100ms" }} />
-                <div className="h-4 w-full rounded-lg bg-muted animate-skeleton" style={{ animationDelay: "200ms" }} />
+                <div className="h-5 w-3/4 rounded-lg bg-muted animate-skeleton [animation-delay:100ms]" />
+                <div className="h-4 w-full rounded-lg bg-muted animate-skeleton [animation-delay:200ms]" />
                 <div className="flex gap-3">
-                    <div className="h-6 w-16 rounded-lg bg-muted animate-skeleton" style={{ animationDelay: "300ms" }} />
-                    <div className="h-6 w-20 rounded-lg bg-muted animate-skeleton" style={{ animationDelay: "400ms" }} />
+                    <div className="h-6 w-16 rounded-lg bg-muted animate-skeleton [animation-delay:300ms]" />
+                    <div className="h-6 w-20 rounded-lg bg-muted animate-skeleton [animation-delay:400ms]" />
                 </div>
             </div>
         </div>
@@ -53,6 +54,7 @@ export function AIGeneratePanel() {
     const [usage, setUsage] = useState<BillingUsageResponse | null>(null);
     const [showUpgradePopup, setShowUpgradePopup] = useState(false);
 
+    const { aiPlannerCharLimit } = useBillingPlan();
     const { createTask } = useTaskStore();
 
     const loadHistory = useCallback(async () => {
@@ -189,8 +191,8 @@ export function AIGeneratePanel() {
                     <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">Describe your goal or project</label>
                 </div>
                 <div className="relative group">
-                    <textarea value={prompt} onChange={(e) => setPrompt(e.target.value.slice(0, MAX_CHARS))} placeholder="E.g., Build a real-time chat application with WebSocket support and user authentication..." className="w-full min-h-[140px] rounded-2xl border-2 border-input bg-card/50 px-6 py-5 text-base font-medium placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-all duration-300 resize-y shadow-sm" disabled={isGenerating} />
-                    <div className="absolute bottom-4 right-4 text-xs font-bold text-muted-foreground/40 tabular-nums">{prompt.length}/{MAX_CHARS}</div>
+                    <textarea value={prompt} onChange={(e) => setPrompt(e.target.value.slice(0, aiPlannerCharLimit))} placeholder="E.g., Build a real-time chat application with WebSocket support and user authentication..." className="w-full min-h-[140px] rounded-2xl border-2 border-input bg-card/50 px-6 py-5 text-base font-medium placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-all duration-300 resize-y shadow-sm" disabled={isGenerating} />
+                    <div className="absolute bottom-4 right-4 text-xs font-bold text-muted-foreground/40 tabular-nums">{prompt.length}/{aiPlannerCharLimit}</div>
                 </div>
                 <div className="mt-6">
                     <div className="flex items-center gap-2 mb-3">
@@ -233,14 +235,14 @@ export function AIGeneratePanel() {
                 <div className="rounded-2xl border border-border/60 bg-background/60 backdrop-blur-xl p-6 shadow-sm animate-slide-up">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Recent Generations</h3>
-                        <button onClick={() => setShowHistory(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                        <button onClick={() => setShowHistory(false)} className="text-muted-foreground hover:text-foreground transition-colors" title="Close history">
                             <X className="h-4 w-4" />
                         </button>
                     </div>
                     {isLoadingHistory ? (
                         <div className="space-y-2">
                             {[0, 1, 2].map((i) => (
-                                <div key={i} className="h-12 rounded-xl bg-muted animate-skeleton" style={{ animationDelay: `${i * 100}ms` }} />
+                                <div key={i} className={`h-12 rounded-xl bg-muted animate-skeleton [animation-delay:${i * 100}ms]`} />
                             ))}
                         </div>
                     ) : history.length === 0 ? (
@@ -275,9 +277,9 @@ export function AIGeneratePanel() {
                 <div className="space-y-4 animate-fade-in">
                     <div className="flex items-center gap-3 px-2">
                         <div className="flex items-center gap-1.5">
-                            <div className="h-2.5 w-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                            <div className="h-2.5 w-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                            <div className="h-2.5 w-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
+                            <div className="h-2.5 w-2.5 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
                         </div>
                         <span className="text-sm font-bold text-primary">AI is analyzing your prompt and building the task tree...</span>
                     </div>
@@ -329,7 +331,7 @@ export function AIGeneratePanel() {
                         {generatedTasks.map((task, index) => {
                             const isSaved = savedTaskIds.has(index);
                             return (
-                                <div key={index} className={`group relative flex items-start gap-4 rounded-2xl border p-5 transition-all duration-300 animate-stagger-in ${isSaved ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-800/40" : "bg-card/60 border-border/50 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20"}`} style={{ animationDelay: `${index * 80}ms` }}>
+                                <div key={index} className={`group relative flex items-start gap-4 rounded-2xl border p-5 transition-all duration-300 animate-stagger-in [animation-delay:${index * 80}ms] ${isSaved ? "bg-emerald-50/50 border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-800/40" : "bg-card/60 border-border/50 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20"}`}>
                                     <div className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black transition-colors sm:h-12 sm:w-12 sm:text-base shadow-sm ${isSaved ? "bg-emerald-500 text-white shadow-emerald-500/20" : "bg-muted border border-border/80 text-muted-foreground"}`}>
                                         {isSaved ? <CheckCircle2 className="h-5 w-5" /> : index + 1}
                                     </div>
@@ -343,6 +345,8 @@ export function AIGeneratePanel() {
                                                 value={task.title}
                                                 onChange={(e) => handleUpdateTask(index, "title", e.target.value)}
                                                 className="w-full text-base font-bold text-foreground bg-transparent border-b border-transparent hover:border-border focus:border-primary focus:outline-none transition-colors pb-0.5"
+                                                title="Task title"
+                                                placeholder="Task title"
                                             />
                                         )}
                                         <p className="text-sm text-muted-foreground/80 leading-relaxed font-medium line-clamp-2">{task.description}</p>
@@ -353,6 +357,7 @@ export function AIGeneratePanel() {
                                                     value={task.priority}
                                                     onChange={(e) => handleUpdateTask(index, "priority", e.target.value)}
                                                     className={`appearance-none cursor-pointer rounded-lg border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${priorityColor(task.priority)} bg-transparent focus:outline-none focus:ring-1 focus:ring-primary`}
+                                                    title="Change task priority"
                                                 >
                                                     <option value="low">Low</option>
                                                     <option value="medium">Medium</option>

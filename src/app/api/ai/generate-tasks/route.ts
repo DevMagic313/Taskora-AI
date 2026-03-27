@@ -20,6 +20,14 @@ export async function POST(request: Request) {
 
 
         const usage = await getBillingUsage(supabase, user.id);
+
+        if (prompt.trim().length > usage.aiPlannerCharLimit) {
+            return NextResponse.json(
+                { status: "error", message: `Your ${usage.planName} plan allows a maximum of ${usage.aiPlannerCharLimit} characters per prompt. Please upgrade for higher limits.` },
+                { status: 400 }
+            );
+        }
+
         if (usage.used >= usage.monthlyLimit) {
             return NextResponse.json(
                 {

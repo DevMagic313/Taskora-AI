@@ -12,6 +12,7 @@ export interface BillingUsage {
     monthlyLimit: number;
     used: number;
     remaining: number;
+    aiPlannerCharLimit: number;
     periodStart: string;
     periodEnd: string;
 }
@@ -99,6 +100,7 @@ export async function getBillingUsage(
         monthlyLimit,
         used,
         remaining: Math.max(monthlyLimit - used, 0),
+        aiPlannerCharLimit: PLAN_CONFIG[plan].aiPlannerCharLimit,
         periodStart: periodStart.toISOString(),
         periodEnd: periodEnd.toISOString(),
     };
