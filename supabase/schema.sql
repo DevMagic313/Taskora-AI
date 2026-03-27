@@ -21,6 +21,8 @@ create table public.profiles (
     billing_cycle_anchor timestamptz default now(),
     notification_preferences jsonb default '{}'::jsonb,
     fcm_token text,
+    security_question text,
+    security_answer_hash text,
     created_at timestamptz default now(),
     updated_at timestamptz default now()
 );
@@ -197,6 +199,8 @@ IF EXISTS (
     ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS billing_plan text default 'starter';
     ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS billing_status text default 'active';
     ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS billing_cycle_anchor timestamptz default now();
+    ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS security_question text;
+    ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS security_answer_hash text;
 END IF;
 END $$;
 
@@ -286,12 +290,14 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-    insert into public.profiles (id, full_name, email, email_confirmed)
+    insert into public.profiles (id, full_name, email, email_confirmed, security_question, security_answer_hash)
     values (
         new.id,
         coalesce(new.raw_user_meta_data->>'name', new.raw_user_meta_data->>'full_name'),
         new.email,
-        false
+        false,
+        new.raw_user_meta_data->>'security_question',
+        new.raw_user_meta_data->>'security_answer' -- Plan is to use direct answer for now or hash it before passing to meta
     );
     return new;
 end;

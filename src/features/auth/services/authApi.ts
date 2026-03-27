@@ -61,7 +61,9 @@ export async function loginApi(
 export async function registerApi(
     name: string,
     email: string,
-    password: string
+    password: string,
+    securityQuestion: string,
+    securityAnswer: string
 ): Promise<AuthResponse> {
     const supabase = createClient();
 
@@ -69,7 +71,11 @@ export async function registerApi(
         email,
         password,
         options: {
-            data: { name },
+            data: { 
+                name,
+                security_question: securityQuestion,
+                security_answer: securityAnswer 
+            },
             emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
     });
@@ -98,4 +104,30 @@ export async function registerApi(
             email: data.user?.email || email,
         },
     };
+}
+
+export async function getSecurityQuestion(email: string): Promise<string> {
+    const res = await fetch("/api/auth/security-question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to fetch security question");
+    return data.question;
+}
+
+export async function resetPasswordWithAnswer(
+    email: string,
+    answer: string,
+    newPassword: string
+): Promise<AuthResponse> {
+    const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, answer, newPassword }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to reset password");
+    return data;
 }

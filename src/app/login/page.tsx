@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { AuthFormInput } from "@/features/auth/components/AuthFormInput";
 import { loginApi } from "@/features/auth/services/authApi";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { Sparkles, ArrowRight, ShieldCheck, Zap, Mail, Lock } from "lucide-react";
+import { Sparkles, ArrowRight, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export default function LoginPage() {
@@ -49,11 +49,11 @@ export default function LoginPage() {
             <div className="hidden lg:flex lg:w-1/2 relative bg-card items-center justify-center p-12 overflow-hidden border-r border-border/40 z-10 shadow-2xl">
                 <div className="absolute inset-0">
                     <div className="absolute top-[-10%] left-[-10%] h-[500px] w-[500px] rounded-full bg-primary/20 blur-[120px] mix-blend-overlay animate-float" />
-                    <div className="absolute bottom-[-20%] right-[-10%] h-[600px] w-[600px] rounded-full bg-accent/20 blur-[150px] mix-blend-overlay animate-float" style={{ animationDelay: '-3s' }} />
+                    <div className="absolute bottom-[-20%] right-[-10%] h-[600px] w-[600px] rounded-full bg-accent/20 blur-[150px] mix-blend-overlay animate-float [animation-delay:-3s]" />
                 </div>
 
                 <div className="absolute top-20 right-20 w-48 h-48 rounded-full border border-primary/10 animate-pulse-slow pointer-events-none" />
-                <div className="absolute bottom-32 left-16 w-32 h-32 rounded-full border border-accent/10 animate-pulse-slow pointer-events-none" style={{ animationDelay: '-1.5s' }} />
+                <div className="absolute bottom-32 left-16 w-32 h-32 rounded-full border border-accent/10 animate-pulse-slow pointer-events-none [animation-delay:-1.5s]" />
 
                 <div className="relative text-foreground space-y-8 max-w-xl z-10 glass p-10 rounded-[2.5rem] shadow-xl border border-border/50">
                     <div className="flex items-center gap-4 mb-10">
@@ -120,6 +120,15 @@ export default function LoginPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
+
+                        <div className="flex justify-end px-1">
+                            <Link 
+                                href="/forgot-password" 
+                                className="text-xs font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
 
                         {errorMsg && (
                             <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-600 shadow-sm flex items-center gap-2 animate-shake dark:bg-red-900/10 dark:text-red-400 dark:border-red-900/50">

@@ -6,14 +6,24 @@ import { useRouter } from "next/navigation";
 import { AuthFormInput } from "@/features/auth/components/AuthFormInput";
 import { registerApi } from "@/features/auth/services/authApi";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { Sparkles, ArrowRight, Activity, Users, Lock } from "lucide-react";
+import { Sparkles, ArrowRight, Activity, Users } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+
+const SECURITY_QUESTIONS = [
+    "What was the name of your first pet?",
+    "What is your mother's maiden name?",
+    "What was the name of your first school?",
+    "In what city were you born?",
+    "What is your favorite book?",
+];
 
 export default function RegisterPage() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [securityQuestion, setSecurityQuestion] = useState(SECURITY_QUESTIONS[0]);
+    const [securityAnswer, setSecurityAnswer] = useState("");
 
     const [isLoading, setIsLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -56,7 +66,7 @@ export default function RegisterPage() {
         setIsLoading(true);
 
         try {
-            const response = await registerApi(name, email, password);
+            const response = await registerApi(name, email, password, securityQuestion, securityAnswer);
 
             // Email confirmation required — show message, don't redirect
             if (response.emailConfirmationRequired) {
@@ -88,11 +98,11 @@ export default function RegisterPage() {
             <div className="hidden lg:flex lg:w-1/2 relative bg-card items-center justify-center p-12 overflow-hidden border-r border-border/40 z-10 shadow-2xl">
                 <div className="absolute inset-0">
                     <div className="absolute top-[-10%] left-[-10%] h-[500px] w-[500px] rounded-full bg-accent/20 blur-[120px] mix-blend-overlay animate-float" />
-                    <div className="absolute bottom-[-20%] right-[-10%] h-[600px] w-[600px] rounded-full bg-primary/20 blur-[150px] mix-blend-overlay animate-float" style={{ animationDelay: '-3s' }} />
+                    <div className="absolute bottom-[-20%] right-[-10%] h-[600px] w-[600px] rounded-full bg-primary/20 blur-[150px] mix-blend-overlay animate-float [animation-delay:-3s]" />
                 </div>
 
                 <div className="absolute top-16 left-20 w-40 h-40 rounded-full border border-accent/10 animate-pulse-slow pointer-events-none" />
-                <div className="absolute bottom-24 right-16 w-56 h-56 rounded-full border border-primary/10 animate-pulse-slow pointer-events-none" style={{ animationDelay: '-1.5s' }} />
+                <div className="absolute bottom-24 right-16 w-56 h-56 rounded-full border border-primary/10 animate-pulse-slow pointer-events-none [animation-delay:-1.5s]" />
 
                 <div className="relative text-foreground space-y-8 max-w-xl z-10 glass p-10 rounded-[2.5rem] shadow-xl border border-border/50">
                     <div className="flex items-center gap-4 mb-10">
@@ -194,6 +204,33 @@ export default function RegisterPage() {
                             placeholder="••••••••"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                        />
+
+                        <div className="space-y-2">
+                            <label htmlFor="securityQuestion" className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70 ml-1">
+                                Security Question
+                            </label>
+                            <select
+                                id="securityQuestion"
+                                value={securityQuestion}
+                                onChange={(e) => setSecurityQuestion(e.target.value)}
+                                className="w-full rounded-2xl border-2 border-input bg-background px-4 py-3 text-sm font-medium focus:border-primary focus:outline-none transition-all"
+                                required
+                            >
+                                {SECURITY_QUESTIONS.map((q) => (
+                                    <option key={q} value={q}>{q}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <AuthFormInput
+                            id="securityAnswer"
+                            label="Security Answer"
+                            type="text"
+                            placeholder="Your secret answer"
+                            value={securityAnswer}
+                            onChange={(e) => setSecurityAnswer(e.target.value)}
                             required
                         />
 
