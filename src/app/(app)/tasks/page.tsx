@@ -144,7 +144,7 @@ export default function TasksPage() {
                             Manage your priorities, organize categories, and track progress all in one place.
                         </p>
                     </div>
-                    <div className="flex gap-2 sm:gap-3 shrink-0 w-full md:w-auto min-w-0">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 shrink-0 w-full md:w-auto">
                         <Button
                             variant="outline"
                             size="lg"
@@ -160,12 +160,12 @@ export default function TasksPage() {
                             icon={!isReprioritizing ? (
                                 canUseAIReprioritize ? <Sparkles className="h-4 w-4 text-accent shrink-0" /> : <Lock className="h-4 w-4 text-amber-500 shrink-0" />
                             ) : undefined}
-                            className={`flex-1 md:flex-none truncate text-sm px-2 sm:px-4 ${
+                            className={`flex-1 sm:flex-none text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap ${
                                 !canUseAIReprioritize ? "border-amber-200 bg-amber-50/50 dark:border-amber-800/40 dark:bg-amber-900/10" : ""
                             }`}
                             title={!canUseAIReprioritize ? "Upgrade to Pro to use AI Reprioritize" : ""}
                         >
-                            <span className="truncate">
+                            <span>
                                 {canUseAIReprioritize ? "AI Reprioritize" : "AI Reprioritize 🔒"}
                             </span>
                         </Button>
@@ -180,11 +180,11 @@ export default function TasksPage() {
                                 setIsModalOpen(true);
                             }} 
                             icon={<Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />} 
-                            className={`shadow-xl shadow-primary/20 hover:shadow-primary/30 flex-1 md:flex-none truncate text-sm px-2 sm:px-4 ${
+                            className={`shadow-xl shadow-primary/20 hover:shadow-primary/30 flex-1 sm:flex-none text-xs sm:text-sm px-3 sm:px-4 ${
                                 !canCreateMoreTasks(tasks.length) ? "opacity-80" : ""
                             }`}
                         >
-                            <span className="truncate">
+                            <span>
                                 {canCreateMoreTasks(tasks.length) ? "Create Action Item" : "Limit Reached 🔒"}
                             </span>
                         </Button>
@@ -228,15 +228,15 @@ export default function TasksPage() {
                 <div className="flex flex-wrap items-center gap-3">
 
                     {/* Status Filter */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap">Status</span>
-                        <div className="flex items-center bg-muted/60 rounded-xl p-1 border border-border/50">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full lg:w-auto">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-1">Status</span>
+                        <div className="flex items-center bg-muted/60 rounded-2xl p-1 border border-border/50 overflow-x-auto no-scrollbar scroll-smooth">
                             {(["all", "pending", "completed"] as const).map((s) => (
                                 <button
                                     key={s}
                                     onClick={() => setStatusFilter(s)}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${statusFilter === s
-                                            ? "bg-background text-foreground shadow-sm"
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${statusFilter === s
+                                            ? "bg-background text-foreground shadow-sm ring-1 ring-border/50"
                                             : "text-muted-foreground hover:text-foreground"
                                         }`}
                                 >
@@ -244,7 +244,7 @@ export default function TasksPage() {
                                     {s === "pending" && <Clock className="h-3 w-3" />}
                                     {s === "completed" && <CheckCircle2 className="h-3 w-3" />}
                                     <span className="capitalize">{s}</span>
-                                    <span className={`text-[10px] font-bold rounded-full px-1 min-w-[16px] text-center ${statusFilter === s
+                                    <span className={`text-[10px] font-bold rounded-lg px-1.5 py-0.5 min-w-[20px] text-center ${statusFilter === s
                                             ? "bg-primary/10 text-primary"
                                             : "bg-muted text-muted-foreground/60"
                                         }`}>
@@ -256,18 +256,18 @@ export default function TasksPage() {
                     </div>
 
                     {/* Divider */}
-                    <div className="h-6 w-px bg-border hidden sm:block" />
+                    <div className="hidden lg:block h-8 w-px bg-border/50 mx-1" />
 
                     {/* Priority Filter */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap">Priority</span>
-                        <div className="flex items-center bg-muted/60 rounded-xl p-1 border border-border/50">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full lg:w-auto">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-1">Priority</span>
+                        <div className="flex items-center bg-muted/60 rounded-2xl p-1 border border-border/50 overflow-x-auto no-scrollbar scroll-smooth">
                             {(["all", "low", "medium", "high"] as const).map((p) => (
                                 <button
                                     key={p}
                                     onClick={() => setPriorityFilter(p)}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${priorityFilter === p
-                                            ? "bg-background text-foreground shadow-sm"
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${priorityFilter === p
+                                            ? "bg-background text-foreground shadow-sm ring-1 ring-border/50"
                                             : "text-muted-foreground hover:text-foreground"
                                         }`}
                                 >
@@ -275,7 +275,7 @@ export default function TasksPage() {
                                     {p === "medium" && priorityFilter === p && <Flag className="h-3 w-3 text-amber-500" />}
                                     {p === "low" && priorityFilter === p && <Flag className="h-3 w-3 text-blue-500" />}
                                     <span className="capitalize">{p}</span>
-                                    <span className={`text-[10px] font-bold rounded-full px-1 min-w-[16px] text-center ${priorityFilter === p
+                                    <span className={`text-[10px] font-bold rounded-lg px-1.5 py-0.5 min-w-[20px] text-center ${priorityFilter === p
                                             ? "bg-primary/10 text-primary"
                                             : "bg-muted text-muted-foreground/60"
                                         }`}>
