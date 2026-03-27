@@ -5,17 +5,46 @@ import { BarChart3, CheckCircle2, Clock, ListTodo, TrendingUp, Activity } from "
 import { useAnalyticsStore } from "@/features/analytics/store/useAnalyticsStore";
 import { StatCard } from "@/components/ui/StatCard";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
+import { useBillingPlan } from "@/features/billing/hooks/useBillingPlan";
+import { UpgradeGate } from "@/components/ui/UpgradeGate";
 
 export const dynamic = "force-dynamic";
 
 export default function AnalyticsPage() {
     const { data, isLoading, error, fetchAnalytics } = useAnalyticsStore();
+    const { canUseAnalytics, isLoading: billingLoading } = useBillingPlan();
 
     useEffect(() => {
         fetchAnalytics();
     }, [fetchAnalytics]);
 
     if (isLoading && !data) return <PageLoader />;
+
+    if (!billingLoading && !canUseAnalytics) {
+        return (
+            <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full">
+                <div className="space-y-3 relative z-10 mb-8">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/5 px-4 py-1.5 shadow-sm">
+                        <BarChart3 className="h-4 w-4 text-accent" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-accent">
+                            Productivity Insights
+                        </span>
+                    </div>
+                    <h1 className="text-4xl font-black tracking-tighter">
+                        Analytics{" "}
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary">
+                            Overview.
+                        </span>
+                    </h1>
+                </div>
+                <UpgradeGate
+                    feature="Analytics — Pro Feature"
+                    description="Get deep insights into your productivity with real-time visualizations, completion rates, priority distributions, and 7-day activity charts. Available on Pro and Team plans."
+                    requiredPlan="pro"
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-10 animate-fade-in relative z-10 w-full overflow-hidden">
@@ -71,7 +100,10 @@ export default function AnalyticsPage() {
                                                 <span className="text-sm font-bold text-muted-foreground">{count} ({percent}%)</span>
                                             </div>
                                             <div className="h-2.5 rounded-full bg-muted overflow-hidden">
-                                                <div className={`h-full rounded-full transition-all duration-1000 ${colors[priority] || "bg-primary"}`} style={{ width: `${percent}%` }} />
+                                                <div 
+                                                    className="h-full rounded-full transition-all duration-1000 bg-primary w-[var(--progress-width)]" 
+                                                    style={{ "--progress-width": `${percent}%` } as React.CSSProperties} 
+                                                />
                                             </div>
                                         </div>
                                     );

@@ -101,7 +101,7 @@ export default function DashboardPage() {
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {recentTasks.map((task, index) => (
+                            {recentTasks.map((task) => (
                                 <div
                                     key={task.id}
                                     className="group flex flex-wrap sm:flex-nowrap items-center gap-4 sm:gap-5 rounded-2xl border border-border/40 bg-zinc-50/50 dark:bg-zinc-900/40 p-4 sm:p-5 transition-all duration-300 hover:bg-white dark:hover:bg-zinc-800/80 hover:shadow-md hover:-translate-y-0.5 animate-stagger-in"

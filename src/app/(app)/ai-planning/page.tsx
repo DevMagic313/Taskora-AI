@@ -1,53 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { Sparkles, Brain, Wand2, Lock } from "lucide-react";
+import { Sparkles, Brain, Wand2 } from "lucide-react";
 import { AIGeneratePanel } from "@/features/ai/components/AIGeneratePanel";
-import { billingApi, type BillingUsageResponse } from "@/features/billing/api";
-import { Button } from "@/components/ui/Button";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
+import { useBillingPlan } from "@/features/billing/hooks/useBillingPlan";
+import { UpgradeGate } from "@/components/ui/UpgradeGate";
 
 export const dynamic = "force-dynamic";
 
 export default function AITaskGeneratorPage() {
-    const [usage, setUsage] = useState<BillingUsageResponse | null>(null);
-    const [usageLoading, setUsageLoading] = useState(true);
+    const { aiLimitReached, usage, isLoading: billingLoading } = useBillingPlan();
 
-    useEffect(() => {
-        billingApi.getUsage().then((u) => {
-            setUsage(u);
-            setUsageLoading(false);
-        }).catch(() => setUsageLoading(false));
-    }, []);
-
-    if (usageLoading) {
+    if (billingLoading) {
         return <PageLoader />;
     }
-
-    const isLimitReached = usage ? usage.used >= usage.monthlyLimit : false;
 
     return (
         <div className="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto space-y-6 sm:space-y-10 animate-fade-in relative z-10 w-full overflow-hidden">
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
-            {isLimitReached ? (
-                <div className="flex flex-col items-center justify-center py-24 text-center">
-                    <div className="h-20 w-20 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-6">
-                        <Lock className="h-10 w-10 text-amber-500" />
-                    </div>
-                    <h2 className="text-2xl font-black tracking-tight mb-3">AI Generation Limit Reached</h2>
-                    <p className="text-muted-foreground font-medium max-w-md mb-8">
-                        You have used all {usage?.monthlyLimit} AI generations on your {usage?.planName} plan this month. 
-                        Upgrade to continue generating task blueprints.
-                    </p>
-                    <Link href="/pricing">
-                        <Button size="lg" className="shadow-xl shadow-primary/20">
-                            Upgrade Plan
-                        </Button>
-                    </Link>
-                </div>
+            {aiLimitReached ? (
+                <UpgradeGate
+                    feature="AI Generation Limit Reached"
+                    description={`You have used all ${usage?.monthlyLimit ?? 0} AI generations on your ${usage?.planName ?? "Starter"} plan this month. Upgrade to Pro for 250 generations/month or Team for 1,500 generations/month.`}
+                    requiredPlan="pro"
+                />
             ) : (
                 <>
                     <div className="relative z-10 space-y-3">
@@ -73,6 +51,23 @@ export default function AITaskGeneratorPage() {
                             {pill.icon} {pill.label}
                         </span>
                     ))}
+
+                    {usage && (
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold shadow-sm border ${
+                            aiLimitReached
+                                ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40"
+                                : usage.remaining <= 3
+                                ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40"
+                                : "bg-muted/60 border-border/50 text-muted-foreground"
+                        }`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${
+                                aiLimitReached ? "bg-red-500" : usage.remaining <= 3 ? "bg-amber-500" : "bg-emerald-500"
+                            }`} />
+                            {aiLimitReached
+                                ? "Limit reached"
+                                : `${usage.remaining}/${usage.monthlyLimit} generations left`}
+                        </span>
+                    )}
                 </div>
             </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import {
@@ -16,7 +17,9 @@ import {
     Trash2,
     Lock,
     CreditCard,
+    Sparkles,
 } from "lucide-react";
+import { useBillingPlan } from "@/features/billing/hooks/useBillingPlan";
 
 interface NavItem {
     label: string;
@@ -69,6 +72,7 @@ const settingsNav: NavGroup[] = [
 export function SettingsSidebar() {
     const pathname = usePathname();
     const { user } = useAuth();
+    const { plan, isPaid } = useBillingPlan();
 
     const initials = user?.name
         ?.split(" ")
@@ -86,7 +90,13 @@ export function SettingsSidebar() {
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden">
                             {user?.avatar_url ? (
-                                <img src={user.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                                <Image 
+                                    src={user.avatar_url} 
+                                    alt="User Avatar" 
+                                    width={40}
+                                    height={40}
+                                    className="h-full w-full object-cover" 
+                                />
                             ) : (
                                 initials
                             )}
@@ -96,6 +106,27 @@ export function SettingsSidebar() {
                             <p className="text-xs text-muted-foreground truncate">{user?.email || ""}</p>
                         </div>
                     </div>
+                </div>
+
+                {/* Plan Badge */}
+                <div className="px-5 py-2 border-b border-border/50">
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                        isPaid
+                            ? "bg-emerald-50 text-emerald-600 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/40"
+                            : "bg-muted text-muted-foreground border border-border"
+                    }`}>
+                        {isPaid ? (
+                            <>
+                                <Sparkles className="h-3 w-3" />
+                                {plan === "team" ? "Team Plan" : "Pro Plan"}
+                            </>
+                        ) : (
+                            <>
+                                <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+                                Free Plan
+                            </>
+                        )}
+                    </span>
                 </div>
 
                 {/* Nav Groups */}
@@ -141,6 +172,9 @@ export function SettingsSidebar() {
                                         >
                                             <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
                                             <span className="truncate">{item.label}</span>
+                                            {item.label === "Members" && !isPaid && !item.comingSoon && (
+                                                <Lock className="ml-auto h-3.5 w-3.5 text-amber-500" />
+                                            )}
                                             {isActive && (
                                                 <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
                                             )}

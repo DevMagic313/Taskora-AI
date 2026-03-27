@@ -10,6 +10,7 @@ import {
   Users, UserPlus, Trash2, Crown, Shield, 
   User, Eye, Mail, Loader2 
 } from "lucide-react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { SettingsHeader } from "@/components/ui/SettingsHeader";
@@ -17,6 +18,8 @@ import { SettingsCard } from "@/components/ui/SettingsCard";
 import { Button } from "@/components/ui/Button";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { SettingsToggleSkeleton } from "@/components/ui/SettingsSkeleton";
+import { useBillingPlan } from "@/features/billing/hooks/useBillingPlan";
+import { UpgradeGate } from "@/components/ui/UpgradeGate";
 
 const inviteSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -30,6 +33,20 @@ interface Member {
   user_id: string;
   role: "owner" | "admin" | "member" | "viewer";
   joined_at: string;
+  full_name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+}
+
+interface WorkspaceMember {
+  id: string;
+  user_id: string;
+  role: "owner" | "admin" | "member" | "viewer";
+  joined_at: string;
+}
+
+interface SupabaseProfile {
+  id: string;
   full_name: string | null;
   email: string | null;
   avatar_url: string | null;
@@ -82,6 +99,8 @@ export default function MembersPage() {
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [confirmRemove, setConfirmRemove] = useState<Member | null>(null);
 
+  const { canUseMembers, isLoading: billingLoading } = useBillingPlan();
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm<InviteFormValues>({
     resolver: zodResolver(inviteSchema),
     defaultValues: { email: "", role: "member" },
@@ -114,9 +133,9 @@ export default function MembersPage() {
       if (membersError) throw membersError;
 
       // Query 2: Get profiles for each member separately
-      const userIds = (membersData || []).map((m: any) => m.user_id);
+      const userIds = (membersData as WorkspaceMember[] || []).map((m) => m.user_id);
 
-      let profilesMap: Record<string, any> = {};
+      let profilesMap: Record<string, SupabaseProfile> = {};
 
       if (userIds.length > 0) {
         const { data: profilesData } = await supabase
@@ -124,10 +143,10 @@ export default function MembersPage() {
           .select("id, full_name, email, avatar_url")
           .in("id", userIds);
 
-        profilesMap = (profilesData || []).reduce((acc: any, p: any) => {
+        profilesMap = (profilesData as SupabaseProfile[] || []).reduce((acc, p) => {
           acc[p.id] = p;
           return acc;
-        }, {});
+        }, {} as Record<string, SupabaseProfile>);
       }
 
       // Also fetch current user profile as fallback
@@ -142,7 +161,7 @@ export default function MembersPage() {
       }
 
       // Combine members with their profiles
-      const mappedMembers = (membersData || []).map((m: any) => ({
+      const mappedMembers = (membersData as WorkspaceMember[] || []).map((m) => ({
         id: m.id,
         user_id: m.user_id,
         role: m.role,
@@ -167,8 +186,8 @@ export default function MembersPage() {
         setInvites(invitesData || []);
       }
 
-    } catch (err) {
-      toast.error("Failed to load members");
+    } catch {
+      toast.error("Failed to load workspace members");
     } finally {
       setLoading(false);
     }
@@ -250,7 +269,7 @@ export default function MembersPage() {
       if (error) throw error;
       toast.success("Member removed successfully");
       await loadData();
-    } catch (err) {
+    } catch {
       toast.error("Failed to remove member");
     } finally {
       setRemovingId(null);
@@ -269,8 +288,8 @@ export default function MembersPage() {
       if (error) throw error;
       toast.success("Role updated");
       await loadData();
-    } catch (err) {
-      toast.error("Failed to update role");
+    } catch {
+      toast.error("Failed to update member role");
     }
   };
 
@@ -290,7 +309,23 @@ export default function MembersPage() {
     }
   };
 
-  if (loading) return <SettingsToggleSkeleton rows={4} />;
+  if (loading || billingLoading) return <SettingsToggleSkeleton rows={4} />;
+
+  if (!canUseMembers) {
+    return (
+      <div className="animate-fade-in">
+        <SettingsHeader
+          title="Members"
+          description="Manage who has access to your workspace."
+        />
+        <UpgradeGate
+          feature="Team Members — Pro Feature"
+          description="Invite teammates, assign roles (Owner, Admin, Member, Viewer), manage permissions, and collaborate in real-time. Upgrade to Pro to unlock workspace collaboration."
+          requiredPlan="pro"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">
@@ -405,8 +440,13 @@ export default function MembersPage() {
                       text-primary flex items-center justify-center 
                       text-xs font-bold shrink-0 overflow-hidden">
                       {member.avatar_url ? (
-                        <img src={member.avatar_url} alt="" 
-                          className="h-full w-full object-cover" />
+                        <Image 
+                          src={member.avatar_url} 
+                          alt={displayName}
+                          width={36}
+                          height={36}
+                          className="h-full w-full object-cover" 
+                        />
                       ) : initials}
                     </div>
                     {/* Info */}
@@ -438,6 +478,7 @@ export default function MembersPage() {
                       </span>
                     ) : (
                       <select
+                        title="Change member role"
                         value={member.role}
                         onChange={(e) => handleChangeRole(member.id, e.target.value)}
                         className="h-8 rounded-lg border border-border 

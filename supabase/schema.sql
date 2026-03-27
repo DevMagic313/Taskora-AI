@@ -285,7 +285,7 @@ begin
     insert into public.profiles (id, full_name, email, email_confirmed)
     values (
         new.id,
-        new.raw_user_meta_data->>'full_name',
+        coalesce(new.raw_user_meta_data->>'name', new.raw_user_meta_data->>'full_name'),
         new.email,
         false
     );
@@ -585,13 +585,13 @@ begin
     end if;
 
     for v_invite in 
-        select id, workspace_id, role 
+        select id, workspace_id, role, invited_by 
         from public.workspace_invites 
-        where email = v_user_email and accepted_at is null
+        where lower(email) = lower(v_user_email) and accepted_at is null
     loop
         -- Insert into members
         insert into public.workspace_members (workspace_id, user_id, role, invited_by)
-        values (v_invite.workspace_id, v_user_id, v_invite.role, v_user_id)
+        values (v_invite.workspace_id, v_user_id, v_invite.role, v_invite.invited_by)
         on conflict (workspace_id, user_id) do update set role = excluded.role;
 
         -- Mark invite as accepted

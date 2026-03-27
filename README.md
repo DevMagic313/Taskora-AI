@@ -54,6 +54,8 @@ At its core, Taskora AI utilizes the powerful Groq AI engine (llama-3.3-70b-vers
 - **Custom Charts**: SVG-powered visual representations of generated vs. completed tasks over time.
 
 ### 🎨 UI/UX Excellence
+- **Gated Premium Features**: Sophisticated `UpgradeGate` component to manage feature access seamlessly.
+- **Dynamic Plan Context**: Brand-aware UI that adapts based on user subscription (Starter, Pro, Team).
 - **Extensive Theming**: Light/Dark modes, multiple accent colors, and adjustable sidebar styles.
 - **Optimistic Updates**: Instant UI feedback with background state synchronization and automatic error rollback.
 - **Responsive Navigation**: Adapts flawlessly to mobile, tablet, and desktop environments.
@@ -160,7 +162,8 @@ Secure, SSR-compatible authentication utilizing Supabase.
 - **Middleware**: Protected routes that seamlessly redirect authenticated users to `/dashboard`, built with graceful fault-tolerance and fallback mechanisms for Edge network disruptions.
 - **Session Management**: Supabase SSR cookie-based sessions without relying on vulnerable `localStorage` tokens.
 - **Email Confirmation**: Robust email confirmation flow ensuring valid users.
-- **Automated Workspaces**: Securely auto-accepts pending workspace invitations silently in the background via Postgres triggers upon user login.
+- **Automated Workspaces**: Securely auto-accepts pending workspace invitations silently in the background via the `accept_pending_invites` RPC, featuring case-insensitive email matching and proper role assignment.
+- **Automatic Profile Scaffolding**: Postgres triggers ensure every new user has a personalized profile, mapping metadata correctly from both Auth and Social logins.
 
 ### 3. Dashboard (`/dashboard`)
 The central hub for user productivity.
@@ -242,10 +245,10 @@ Browser push notification hub.
 - Stores FCM tokens securely in user profiles upon granting browser permissions.
 
 ### 15. Pricing Page (`/pricing`)
-Marketing and conversion centered around available plans.
-- Clear breakdown of Starter (Free), Pro ($12/mo), and Team ($49/mo) capabilities.
-- Backend-enforced limits directly integrating with Supabase to strictly cap Starter users at 50 tasks and 15 AI generations/month.
-- Contains "Coming Soon" badges and "Get notified" waitlist functionality.
+- **Tiered SaaS Model**: Clear breakdown of Starter (Free), Pro ($12/mo), and Team ($49/mo) capabilities.
+- **Enforced Gating**: Real-time plan-aware logic blocks premium features (Analytics, Member management, AI Reprioritize) for Starter users.
+- **Usage Tracking**: Integrates with a billing API to strictly cap Starter users at 15 AI generations/month and 50 total tasks.
+- **Upgrade Guidance**: Persistent usage indicators and context-sensitive upgrade prompts ensure users know exactly when to scale.
 
 ### 16. Public Pages
 Comprehensive non-authenticated content covering:

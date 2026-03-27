@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { Plus, ListTodo, SlidersHorizontal, Search, CheckCircle2, Sparkles, X, Flag, Clock } from "lucide-react";
+import toast from "react-hot-toast";
+import { Plus, ListTodo, SlidersHorizontal, Search, CheckCircle2, Sparkles, X, Flag, Clock, Lock } from "lucide-react";
 import { useTaskStore } from "@/features/tasks/store/useTaskStore";
 import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { TaskFormModal } from "@/features/tasks/components/TaskFormModal";
@@ -12,6 +13,7 @@ import type { ReprioritizeSuggestion } from "@/features/ai/services/aiApi";
 import { Button } from "@/components/ui/Button";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import type { ClientTask } from "@/features/tasks/services/taskApi";
+import { useBillingPlan } from "@/features/billing/hooks/useBillingPlan";
 
 type StatusFilter = "all" | "pending" | "completed";
 type PriorityFilter = "all" | "low" | "medium" | "high";
@@ -20,6 +22,7 @@ export const dynamic = "force-dynamic";
 
 export default function TasksPage() {
     const { tasks, isLoading, error, fetchTasks, createTask, updateTask, deleteTask } = useTaskStore();
+    const { canUseAIReprioritize, canCreateMoreTasks } = useBillingPlan();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<ClientTask | null>(null);
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -145,16 +148,45 @@ export default function TasksPage() {
                         <Button
                             variant="outline"
                             size="lg"
-                            onClick={handleReprioritize}
+                            onClick={() => {
+                                if (!canUseAIReprioritize) {
+                                    window.location.href = "/pricing";
+                                    return;
+                                }
+                                handleReprioritize();
+                            }}
                             isLoading={isReprioritizing}
                             disabled={tasks.filter(t => t.status !== "completed").length === 0}
-                            icon={!isReprioritizing ? <Sparkles className="h-4 w-4 text-accent shrink-0" /> : undefined}
-                            className="flex-1 md:flex-none truncate text-sm px-2 sm:px-4"
+                            icon={!isReprioritizing ? (
+                                canUseAIReprioritize ? <Sparkles className="h-4 w-4 text-accent shrink-0" /> : <Lock className="h-4 w-4 text-amber-500 shrink-0" />
+                            ) : undefined}
+                            className={`flex-1 md:flex-none truncate text-sm px-2 sm:px-4 ${
+                                !canUseAIReprioritize ? "border-amber-200 bg-amber-50/50 dark:border-amber-800/40 dark:bg-amber-900/10" : ""
+                            }`}
+                            title={!canUseAIReprioritize ? "Upgrade to Pro to use AI Reprioritize" : ""}
                         >
-                            <span className="truncate">AI Reprioritize</span>
+                            <span className="truncate">
+                                {canUseAIReprioritize ? "AI Reprioritize" : "AI Reprioritize 🔒"}
+                            </span>
                         </Button>
-                        <Button size="lg" onClick={() => setIsModalOpen(true)} icon={<Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />} className="shadow-xl shadow-primary/20 hover:shadow-primary/30 flex-1 md:flex-none truncate text-sm px-2 sm:px-4">
-                            <span className="truncate">Create Action Item</span>
+                        <Button 
+                            size="lg" 
+                            onClick={() => {
+                                if (!canCreateMoreTasks(tasks.length)) {
+                                    toast.error("Task limit reached. Upgrade to Pro for unlimited tasks.");
+                                    window.location.href = "/pricing";
+                                    return;
+                                }
+                                setIsModalOpen(true);
+                            }} 
+                            icon={<Plus className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />} 
+                            className={`shadow-xl shadow-primary/20 hover:shadow-primary/30 flex-1 md:flex-none truncate text-sm px-2 sm:px-4 ${
+                                !canCreateMoreTasks(tasks.length) ? "opacity-80" : ""
+                            }`}
+                        >
+                            <span className="truncate">
+                                {canCreateMoreTasks(tasks.length) ? "Create Action Item" : "Limit Reached 🔒"}
+                            </span>
                         </Button>
                     </div>
                 </div>
@@ -306,7 +338,7 @@ export default function TasksPage() {
                 </div>
             ) : (
                 <div className="relative z-10 grid gap-4 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 auto-rows-max items-start min-h-[400px]">
-                    {filteredTasks.map((task, index) => (
+                    {filteredTasks.map((task) => (
                         <div key={task.id} className="animate-stagger-in">
                             <TaskCard task={task} onToggleStatus={handleToggleStatus} onDelete={handleDelete} onEdit={handleEdit} />
                         </div>
