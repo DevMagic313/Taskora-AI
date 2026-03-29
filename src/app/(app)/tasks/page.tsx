@@ -346,7 +346,7 @@ export default function TasksPage() {
                 </div>
             )}
 
-            <TaskFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={createTask} />
+            <TaskFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             <TaskEditModal task={editingTask} isOpen={editingTask !== null} onClose={() => setEditingTask(null)} onSubmit={handleEditSubmit} />
             <ReprioritizeModal
                 isOpen={isReprioritizeModalOpen}

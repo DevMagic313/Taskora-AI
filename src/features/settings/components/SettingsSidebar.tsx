@@ -18,6 +18,7 @@ import {
     Lock,
     CreditCard,
     Sparkles,
+    Settings,
 } from "lucide-react";
 import { useBillingPlan } from "@/features/billing/hooks/useBillingPlan";
 
@@ -38,6 +39,7 @@ const settingsNav: NavGroup[] = [
     {
         title: "Account",
         items: [
+            { label: "General", href: "/settings/general", icon: Settings },
             { label: "Profile", href: "/settings/profile", icon: User },
             { label: "Appearance", href: "/settings/appearance", icon: Palette },
             { label: "Notifications", href: "/settings/notifications", icon: Bell },

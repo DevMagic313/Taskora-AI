@@ -79,8 +79,8 @@
   }
 
   ::selection {
-    background-color: color-mix(in srgb, var(--primary) 25%, transparent);
-    color: var(--foreground);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
   }
 
   body {
@@ -123,15 +123,15 @@
 @layer utilities {
   .glass {
     background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .dark .glass {
     background: rgba(24, 24, 27, 0.4);
-    backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
@@ -146,6 +146,7 @@
     background-size: 40px 40px;
     background-image: linear-gradient(to right, var(--border) 1px, transparent 1px),
       linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black, transparent);
     mask-image: linear-gradient(to bottom, transparent, black, transparent);
     opacity: 0.3;
   }
@@ -201,6 +202,127 @@
     background-size: 200% 100%;
     animation: skeletonShimmer 1.5s ease-in-out infinite;
   }
+
+  /* ─── New UI Overhaul Animations ─── */
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-out-left {
+    animation: slideOutLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-out-right {
+    animation: slideOutRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-draw-stroke {
+    animation: drawStroke 1.2s ease-out forwards;
+  }
+
+  .animate-count-up {
+    animation: countUp 0.6s ease-out forwards;
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+
+  .animate-typewriter {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid var(--primary);
+    animation: typewriter 3s steps(30) 0.5s forwards, blink 0.8s step-end infinite;
+    width: 0;
+  }
+
+  .animate-sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradientShift 4s ease infinite;
+  }
+
+  /* Card tilt hover effect */
+  .card-tilt {
+    transition: transform 0.3s ease;
+  }
+  .card-tilt:hover {
+    transform: perspective(1000px) rotateY(-2deg) rotateX(2deg) translateY(-4px);
+  }
+
+  /* Step wizard transitions */
+  .step-enter {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  .step-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .step-exit {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .step-exit-active {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.25s ease;
+  }
+
+  /* No scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  @supports (scrollbar-width: none) {
+    .no-scrollbar {
+      scrollbar-width: none;
+    }
+  }
+
+  /* Animation delay utilities */
+  .delay-0 { animation-delay: 0s; }
+  .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-700 { animation-delay: 700ms; }
+  .delay-1000 { animation-delay: 1s; }
+  .\[animation-delay\:80ms\] { animation-delay: 80ms; }
+  .\[animation-delay\:120ms\] { animation-delay: 120ms; }
+  .\[animation-delay\:160ms\] { animation-delay: 160ms; }
+  .\[animation-delay\:200ms\] { animation-delay: 200ms; }
+  .\[animation-delay\:240ms\] { animation-delay: 240ms; }
+  .\[animation-delay\:280ms\] { animation-delay: 280ms; }
+  .\[animation-delay\:320ms\] { animation-delay: 320ms; }
+  .\[animation-delay\:360ms\] { animation-delay: 360ms; }
+  .\[animation-delay\:400ms\] { animation-delay: 400ms; }
+  .\[animation-delay\:440ms\] { animation-delay: 440ms; }
+
+  /* Negative delay (for float offset) */
+  .delay-neg-2s { animation-delay: -2s; }
+
+  /* Marquee content width */
+  .w-max-content { width: max-content; }
+
+  /* Step progress bar widths */
+  .step-progress-0 { width: 0%; }
+  .step-progress-50 { width: 33.335%; }
+  .step-progress-100 { width: 66.67%; }
 }
 
 /* --- Keyframes --- */
@@ -318,5 +440,118 @@
 
   100% {
     background-position: -200% center;
+  }
+}
+
+/* ─── New Keyframes for UI Overhaul ─── */
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes drawStroke {
+  from {
+    stroke-dashoffset: var(--circumference, 327);
+  }
+  to {
+    stroke-dashoffset: var(--progress-offset, 0);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

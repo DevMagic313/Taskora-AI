@@ -138,3 +138,32 @@ export interface PasswordFormValues {
     newPassword: string;
     confirmPassword: string;
 }
+
+// ─── User Settings (General Preferences) ────────────────────────
+
+export type TaskViewOption = "grid" | "list" | "kanban";
+export type WeekStart = "sunday" | "monday";
+export type DateFormatOption = "MM/DD/YYYY" | "DD/MM/YYYY" | "YYYY-MM-DD";
+export type TimeFormatOption = "12h" | "24h";
+
+export interface UserSettings {
+    defaultTaskView: TaskViewOption;
+    defaultPriority: "low" | "medium" | "high";
+    autoMarkCompleted: boolean;
+    taskSounds: boolean;
+    compactMode: boolean;
+    startOfWeek: WeekStart;
+    dateFormat: DateFormatOption;
+    timeFormat: TimeFormatOption;
+}
+
+export const DEFAULT_USER_SETTINGS: UserSettings = {
+    defaultTaskView: "grid",
+    defaultPriority: "medium",
+    autoMarkCompleted: false,
+    taskSounds: true,
+    compactMode: false,
+    startOfWeek: "monday",
+    dateFormat: "MM/DD/YYYY",
+    timeFormat: "12h",
+};

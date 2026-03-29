@@ -1,7 +1,7 @@
 "use client";
 
 import type { ClientTask } from "@/features/tasks/services/taskApi";
-import { CheckCircle2, Circle, Clock, Trash2, Flag, Pencil, User, AlertCircle } from "lucide-react";
+import { CheckCircle2, Circle, Clock, Trash2, Flag, Pencil, User, AlertCircle, Zap } from "lucide-react";
 
 interface TaskCardProps {
     task: ClientTask;
@@ -24,13 +24,28 @@ export function TaskCard({ task, onToggleStatus, onDelete, onEdit }: TaskCardPro
         high: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 ring-1 ring-red-500/30",
     };
 
+    const priorityGlows = {
+        low: "",
+        medium: "",
+        high: "animate-glow-pulse",
+    };
+
     return (
         <div
-            className={`group relative flex flex-col justify-between rounded-2xl sm:rounded-[1.5rem] border p-1 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden pointer-events-auto ${isCompleted
+            className={`group relative flex flex-col justify-between rounded-2xl sm:rounded-[1.5rem] border p-1 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 overflow-hidden pointer-events-auto ${isCompleted
                 ? "opacity-60 grayscale-[0.5] border-border/30 hover:grayscale-0 hover:opacity-100"
-                : "border-border/50 hover:border-primary/30 z-10 hover:z-20"
+                : `border-border/50 hover:border-primary/30 z-10 hover:z-20 ${task.priority === "high" ? priorityGlows.high : ""}`
                 }`}
         >
+            {/* Priority accent line at top */}
+            {!isCompleted && (
+                <div className={`absolute top-0 left-4 right-4 h-0.5 rounded-full ${
+                    task.priority === "high" ? "bg-gradient-to-r from-red-500/80 to-red-400/40" :
+                    task.priority === "medium" ? "bg-gradient-to-r from-emerald-500/60 to-emerald-400/20" :
+                    "bg-gradient-to-r from-blue-500/40 to-blue-400/10"
+                }`} />
+            )}
+
             <div className={`absolute inset-0 bg-gradient-to-br transition-opacity duration-500 rounded-2xl sm:rounded-[1.5rem] pointer-events-none ${isCompleted ? "opacity-0" : "from-card to-background opacity-100 group-hover:from-primary/5 group-hover:to-transparent"
                 }`} />
 
@@ -42,7 +57,7 @@ export function TaskCard({ task, onToggleStatus, onDelete, onEdit }: TaskCardPro
                 <div className="flex items-start gap-3 sm:gap-5">
                     <button
                         onClick={() => onToggleStatus(task.id, task.status)}
-                        className={`mt-0.5 flex-shrink-0 transition-transform duration-500 hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/20 rounded-full group/btn ${isCompleted ? 'animate-scale-in text-emerald-500 shadow-lg shadow-emerald-500/20' : 'text-muted-foreground'}`}
+                        className={`mt-0.5 flex-shrink-0 transition-all duration-500 hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/20 rounded-full group/btn ${isCompleted ? 'animate-scale-in text-emerald-500 shadow-lg shadow-emerald-500/20' : 'text-muted-foreground'}`}
                         aria-label={isCompleted ? "Mark pending" : "Mark completed"}
                     >
                         {isCompleted ? (
@@ -62,8 +77,8 @@ export function TaskCard({ task, onToggleStatus, onDelete, onEdit }: TaskCardPro
                                 </span>
                             )}
                             {isInProgress && (
-                                <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-purple-100/80 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400 text-xs font-bold border border-purple-200/50 dark:border-purple-800/30">
-                                    In Progress
+                                <span className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-md bg-purple-100/80 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400 text-xs font-bold border border-purple-200/50 dark:border-purple-800/30">
+                                    <Zap className="h-3 w-3" /> In Progress
                                 </span>
                             )}
                             <span
@@ -117,9 +132,9 @@ export function TaskCard({ task, onToggleStatus, onDelete, onEdit }: TaskCardPro
                             <span
                                 className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1 text-[10px] font-black uppercase tracking-widest border shadow-sm ${
                                     isPastDue
-                                        ? "bg-red-50 text-red-600 border-red-100"
+                                        ? "bg-red-50 text-red-600 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30"
                                         : isDueSoon
-                                            ? "bg-amber-50 text-amber-700 border-amber-100"
+                                            ? "bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30"
                                             : "bg-muted/60 text-muted-foreground border-border/50"
                                 }`}
                             >
