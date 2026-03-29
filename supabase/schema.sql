@@ -22,6 +22,7 @@ create table public.profiles (
     fcm_token text,
     security_question text,
     security_answer_hash text,
+    user_settings jsonb default '{}'::jsonb,
     created_at timestamptz default now(),
     updated_at timestamptz default now()
 );
@@ -219,6 +220,8 @@ ALTER TABLE public.profiles
 ADD COLUMN IF NOT EXISTS security_question text;
 ALTER TABLE public.profiles
 ADD COLUMN IF NOT EXISTS security_answer_hash text;
+ALTER TABLE public.profiles
+ADD COLUMN IF NOT EXISTS user_settings jsonb default '{}'::jsonb;
 END IF;
 END $$;
 -- =========================

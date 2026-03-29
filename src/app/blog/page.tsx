@@ -1,42 +1,14 @@
 import Link from "next/link";
 import { Sparkles, BookOpen, Clock, ArrowRight } from "lucide-react";
 
+import { blogs } from "@/lib/data/blogs";
+
 export const metadata = {
     title: "Blog — Taskora AI",
     description: "Insights on productivity, AI-powered task management, and engineering best practices from the Taskora AI team.",
 };
 
 export default function BlogPage() {
-    const posts = [
-        {
-            title: "How AI is Revolutionizing Task Management",
-            excerpt: "Discover how large language models are changing the way modern teams plan and execute projects, from automated task decomposition to intelligent reprioritization and predictive scheduling.",
-            date: "Mar 25, 2026",
-            category: "AI & Productivity",
-            readTime: "5 min read",
-        },
-        {
-            title: "Building a Workspace-Aware Architecture",
-            excerpt: "A technical deep dive into how we implemented full multi-tenant workspace isolation, Role-Based Access Control (RBAC), and Supabase Row Level Security (RLS) in Next.js.",
-            date: "Mar 20, 2026",
-            category: "Engineering",
-            readTime: "8 min read",
-        },
-        {
-            title: "The Art of Breaking Down Complex Goals",
-            excerpt: "Learn the methodology behind our Groq-powered AI decomposition engine and how it seamlessly turns vague ideas into structured, actionable blueprints in seconds.",
-            date: "Mar 12, 2026",
-            category: "Product",
-            readTime: "4 min read",
-        },
-        {
-            title: "Achieving Zero Latency with Optimistic UIs",
-            excerpt: "How we achieved completely instant, zero-latency user interactions across Taskora AI by leveraging Zustand for optimistic state updates and seamless edge-case rollbacks.",
-            date: "Feb 28, 2026",
-            category: "Engineering",
-            readTime: "6 min read",
-        },
-    ];
 
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -58,8 +30,9 @@ export default function BlogPage() {
                 </div>
 
                 <div className="space-y-6">
-                    {posts.map((post) => (
-                        <article key={post.title} className="group rounded-3xl border border-border/50 bg-card p-6 sm:p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary/20 hover:-translate-y-0.5 cursor-pointer">
+                    {blogs.map((post) => (
+                        <Link key={post.slug} href={`/blog/${post.slug}`} className="block group">
+                            <article className="rounded-3xl border border-border/50 bg-card p-6 sm:p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary/20 hover:-translate-y-0.5 cursor-pointer">
                             <div className="flex flex-wrap items-center gap-3 mb-4">
                                 <span className="inline-flex items-center rounded-full bg-primary/5 border border-primary/20 px-3 py-1 text-[10px] font-bold text-primary uppercase tracking-wider">{post.category}</span>
                                 <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
@@ -72,7 +45,8 @@ export default function BlogPage() {
                             <div className="flex items-center gap-2 mt-4 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                                 Learn more <ArrowRight className="h-4 w-4" />
                             </div>
-                        </article>
+                            </article>
+                        </Link>
                     ))}
                 </div>
             </main>
