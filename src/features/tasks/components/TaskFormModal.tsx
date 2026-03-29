@@ -146,9 +146,9 @@ export function TaskFormModal({ isOpen, onClose, task }: TaskFormModalProps) {
             <div className="absolute inset-0 bg-black/50 backdrop-blur-lg animate-fade-in" onClick={onClose} />
             
             <div className="relative w-full sm:max-w-2xl bg-background rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-slide-up sm:animate-scale-in overflow-hidden border border-border/50">
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col min-h-0 h-full">
                     {/* Header */}
-                    <div className="px-6 pt-6 pb-4 border-b border-border/40 bg-card/50 backdrop-blur-md relative z-20">
+                    <div className="shrink-0 px-6 pt-6 pb-4 border-b border-border/40 bg-card/50 backdrop-blur-md relative z-20">
                         <div className="flex items-center justify-between mb-2">
                             <h2 className="text-2xl font-black tracking-tight flex items-center gap-2">
                                 {task ? <CheckCircle2 className="h-6 w-6 text-primary" /> : <Target className="h-6 w-6 text-primary" />}
@@ -198,7 +198,7 @@ export function TaskFormModal({ isOpen, onClose, task }: TaskFormModalProps) {
                     </div>
 
                     {/* Content */}
-                    <form id="task-form" onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+                    <form id="task-form" onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
                         <div className="flex-1 overflow-y-auto px-6 py-6 no-scrollbar custom-scrollbar">
                             <div key={animKey} className={direction === "forward" ? "animate-slide-in-right" : "animate-slide-in-left"}>
                                 
@@ -316,7 +316,7 @@ export function TaskFormModal({ isOpen, onClose, task }: TaskFormModalProps) {
                         </div>
 
                         {/* Footer & Live Preview */}
-                        <div className="border-t border-border/40 bg-card/50 backdrop-blur-md p-6 mt-auto">
+                        <div className="shrink-0 border-t border-border/40 bg-card/50 backdrop-blur-md p-6">
                             {/* Live Preview Card */}
                             <div className="mb-6 p-4 rounded-2xl border border-border bg-background shadow-sm flex items-start gap-4 transition-all">
                                 <div className={`flex shrink-0 h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 ${

@@ -10,31 +10,31 @@ export default function BlogPage() {
     const posts = [
         {
             title: "How AI is Revolutionizing Task Management",
-            excerpt: "Discover how large language models are changing the way teams plan and execute projects, from automated decomposition to intelligent prioritization.",
-            date: "Feb 25, 2026",
+            excerpt: "Discover how large language models are changing the way modern teams plan and execute projects, from automated task decomposition to intelligent reprioritization and predictive scheduling.",
+            date: "Mar 25, 2026",
             category: "AI & Productivity",
             readTime: "5 min read",
         },
         {
-            title: "Building Optimistic UIs with Zustand",
-            excerpt: "A deep dive into how we built zero-latency task updates using Zustand state management with automatic rollback on failure.",
-            date: "Feb 22, 2026",
+            title: "Building a Workspace-Aware Architecture",
+            excerpt: "A technical deep dive into how we implemented full multi-tenant workspace isolation, Role-Based Access Control (RBAC), and Supabase Row Level Security (RLS) in Next.js.",
+            date: "Mar 20, 2026",
             category: "Engineering",
             readTime: "8 min read",
         },
         {
-            title: "Why Row Level Security Matters for SaaS",
-            excerpt: "How Supabase RLS policies ensure complete data isolation between users, and why we chose this over traditional middleware auth.",
-            date: "Feb 19, 2026",
-            category: "Security",
-            readTime: "6 min read",
-        },
-        {
             title: "The Art of Breaking Down Complex Goals",
-            excerpt: "Learn the methodology behind our AI task decomposition engine and how it turns vague ideas into structured action plans.",
-            date: "Feb 15, 2026",
+            excerpt: "Learn the methodology behind our Groq-powered AI decomposition engine and how it seamlessly turns vague ideas into structured, actionable blueprints in seconds.",
+            date: "Mar 12, 2026",
             category: "Product",
             readTime: "4 min read",
+        },
+        {
+            title: "Achieving Zero Latency with Optimistic UIs",
+            excerpt: "How we achieved completely instant, zero-latency user interactions across Taskora AI by leveraging Zustand for optimistic state updates and seamless edge-case rollbacks.",
+            date: "Feb 28, 2026",
+            category: "Engineering",
+            readTime: "6 min read",
         },
     ];
 
@@ -70,7 +70,7 @@ export default function BlogPage() {
                             <h2 className="text-xl font-bold tracking-tight mb-3 group-hover:text-primary transition-colors">{post.title}</h2>
                             <p className="text-muted-foreground font-medium leading-relaxed">{post.excerpt}</p>
                             <div className="flex items-center gap-2 mt-4 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                                Read Article <ArrowRight className="h-4 w-4" />
+                                Learn more <ArrowRight className="h-4 w-4" />
                             </div>
                         </article>
                     ))}
